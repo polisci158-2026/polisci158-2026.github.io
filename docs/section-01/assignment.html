@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section Assignment 1 · Make your personal website · POLISCI 158</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; font-size: .95rem; margin: .5rem 0 0; }
+  .meta b { font-weight: 600; }
+  .submit-box { text-align: center; padding: 1.5rem 1rem; }
+  .submit-box code { font-size: 1.25rem; padding: .3em .6em; }
+  @media print { .btn-row { display: none; } h2 { margin-top: 1.4rem; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">POLISCI 158 · Section 1</a>
+    <nav aria-label="Page links">
+      <a href="index.html">← Workshop guide</a>
+      <a href="example/index.html">Example site</a>
+      <a href="../index.html">All sections</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero" style="padding-bottom:0">
+    <p class="eyebrow">Section Assignment 1</p>
+    <h1>Make your personal website</h1>
+    <div class="meta">
+      <span><b>Graded:</b> Pass / No-Pass</span>
+      <span><b>Due:</b> before your Section 2 meeting (exact deadline on Canvas)</span>
+      <span><b>Submit:</b> one link on Canvas</span>
+    </div>
+    <div class="btn-row">
+      <a class="btn" href="index.html#steps">Open the step-by-step guide</a>
+      <button type="button" class="btn secondary" onclick="window.print()">Print / save as PDF</button>
+    </div>
+  </section>
+
+  <h2>Why this assignment</h2>
+  <p>You'll use an AI coding agent and GitHub throughout this course. This assignment sets up both tools on a small, low-stakes task you know well: yourself.</p>
+
+  <h2>What to build</h2>
+  <p>A one-page personal website, live at <code>https://YOUR-USERNAME.github.io</code>, with:</p>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Part</th><th>What it needs</th></tr></thead>
+    <tbody>
+      <tr><td><strong>About</strong></td><td>Your name and a few sentences about you <em>in your own words</em></td></tr>
+      <tr><td><strong>Interests</strong></td><td>A few things you're interested in</td></tr>
+      <tr><td><strong>Project interests</strong></td><td>What kinds of projects you'd like to work on in this course: topics, questions, or the kind of work you enjoy. Classmates will use this to find group partners for the final project.</td></tr>
+      <tr><td><strong>Footer</strong></td><td>One line crediting the AI tool, e.g. <em>"Built with Codex. Text written by Jordan Rivera."</em></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted">You don't need a photo, a CV, contact details, or any coding knowledge. See the <a href="example/index.html">example site</a> for the scale we have in mind.</p>
+
+  <h2>To pass</h2>
+  <ul>
+    <li>Your URL opens your page, not a 404 or the README.</li>
+    <li>The page has the four parts above.</li>
+    <li>The words are yours, and they're true. The agent may structure and style the page, but it must not invent facts about you.</li>
+  </ul>
+
+  <h2>What to submit</h2>
+  <div class="callout submit-box">
+    <p style="margin:0 0 .6rem"><strong>One link</strong></p>
+    <code>https://YOUR-USERNAME.github.io</code>
+    <p class="muted small" style="margin:.9rem 0 0">Before you submit, open the link in a private or incognito window to check that it works for everyone, not just you.</p>
+  </div>
+
+  <h2>Privacy and access</h2>
+  <ul>
+    <li>Only publish what you're comfortable having online. Leave out your phone number, address, and student ID.</li>
+    <li>If you can't or don't want to host a public page, or if tool access or cost is a problem, <strong>contact your TA before the deadline</strong>.</li>
+  </ul>
+
+  <footer class="site-footer">POLISCI 158 · AI &amp; Politics · Fall 2026 · Section Assignment 1. Drafted with Claude Code (Claude Opus 5.5) and reviewed by the teaching team.</footer>
+</main>
+
+</body>
+</html>

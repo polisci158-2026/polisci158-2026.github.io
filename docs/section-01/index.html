@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 1 · Getting started with a coding agent + GitHub · POLISCI 158</title>
+<meta name="description" content="POLISCI 158 Section 1 workshop: set up Claude Code or Codex, learn the GitHub basics, and publish your personal website.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-route="claude">
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">POLISCI 158 · Section 1</a>
+    <nav aria-label="Page sections">
+      <a href="#ideas">Ideas</a>
+      <a href="#why-git">Why Git</a>
+      <a href="#steps">Steps</a>
+      <a href="#principles">Working with agents</a>
+      <a href="#stuck">Stuck?</a>
+      <a href="assignment.html">Assignment</a>
+      <a href="../index.html">All sections</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <p class="eyebrow">Week 2 · Section 1 · Workshop guide</p>
+    <h1>Your first agent, your first repo, your first website</h1>
+    <p class="lede">Today you'll set up a coding agent (Claude Code <em>or</em> Codex) and GitHub. You'll use them together to publish a personal website at your own public address. You will use this same setup in section for the rest of the quarter.</p>
+
+    <div class="controls" aria-label="Personalize this guide">
+      <div>
+        <span id="route-label" style="display:block;font-weight:600;font-size:.92rem;margin-bottom:.35rem">I'm using</span>
+        <div class="segmented" role="group" aria-labelledby="route-label">
+          <button type="button" data-route-btn="claude" aria-pressed="true">Claude Code</button>
+          <button type="button" data-route-btn="codex" aria-pressed="false">Codex</button>
+        </div>
+        <p class="hint">The steps below switch to match your tool. Not sure? See <a href="#two-agents">which one</a>.</p>
+      </div>
+      <div>
+        <label for="gh-user">My GitHub username</label>
+        <input id="gh-user" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. jrivera-su">
+        <p class="hint">Fills in your repo name and site address below. Stored only in this browser.</p>
+      </div>
+    </div>
+
+    <div class="progress" aria-live="polite">
+      <div class="bar" aria-hidden="true"><span id="progress-fill"></span></div>
+      <span id="progress-text">0 of 9 steps done</span>
+    </div>
+
+    <ul class="outcomes">
+      <li><strong>A live website</strong>at <code class="u-url">https://YOUR-USERNAME.github.io</code></li>
+      <li><strong>A working setup</strong>an agent that edits files, and GitHub to save and publish them</li>
+      <li><strong>The core loop</strong>describe → review → revise → commit. You'll reuse it all quarter.</li>
+    </ul>
+  </section>
+
+  <!-- ============ IDEAS ============ -->
+  <section id="ideas">
+    <h2>Three ideas before you start</h2>
+
+    <h3>1 · A chat model gives you text. A coding agent does work in a folder.</h3>
+    <p>In a regular chat (claude.ai, ChatGPT), you ask a question, get an answer, and copy what you need. A <strong>coding agent</strong> works inside a folder on your computer. It can read your files, create and edit them, and run commands. It shows you what it changed, and it asks before doing anything risky. You describe the goal, and you stay the reviewer.</p>
+    <p class="muted small">Try it: for each task, which tool would you reach for?</p>
+
+    <div class="sorter" id="sorter">
+      <div class="scenario" data-answer="chat">
+        <span>Explain what GitHub Pages is, in plain language.</span>
+        <span class="choices"><button type="button" data-pick="chat">Chat</button><button type="button" data-pick="agent">Agent</button></span>
+        <p class="feedback">A question with a text answer. Nothing on your computer needs to change.</p>
+      </div>
+      <div class="scenario" data-answer="agent">
+        <span>Turn my notes into a website in this folder.</span>
+        <span class="choices"><button type="button" data-pick="chat">Chat</button><button type="button" data-pick="agent">Agent</button></span>
+        <p class="feedback">Creating several files that must fit together is agent work. A chat would make you copy and paste every file by hand.</p>
+      </div>
+      <div class="scenario" data-answer="chat">
+        <span>Summarize this week's reading and quiz me on it.</span>
+        <span class="choices"><button type="button" data-pick="chat">Chat</button><button type="button" data-pick="agent">Agent</button></span>
+        <p class="feedback">Understanding and conversation, with no files to build. Chat is the better fit.</p>
+      </div>
+      <div class="scenario" data-answer="agent">
+        <span>The link in my site's footer is broken. Find and fix it.</span>
+        <span class="choices"><button type="button" data-pick="chat">Chat</button><button type="button" data-pick="agent">Agent</button></span>
+        <p class="feedback">The agent can open the actual file, find the bug, and fix it where it lives.</p>
+      </div>
+      <div class="scenario" data-answer="agent">
+        <span>Rename all 12 photos in this folder and update the page to match.</span>
+        <span class="choices"><button type="button" data-pick="chat">Chat</button><button type="button" data-pick="agent">Agent</button></span>
+        <p class="feedback">Repetitive changes across many files are exactly what agents are good at.</p>
+      </div>
+    </div>
+
+    <h3 id="two-agents">2 · Two agents, one workflow. Pick one.</h3>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th></th><th>Claude Code</th><th>Codex</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Made by</th><td>Anthropic</td><td>OpenAI</td></tr>
+        <tr><th scope="row">Where you open it</th><td>Claude desktop app → <strong>Code</strong> tab</td><td>ChatGPT desktop app → switch the mode menu to <strong>Codex</strong></td></tr>
+        <tr><th scope="row">Plan needed</th><td>Paid: Pro, Max, Team or Enterprise</td><td>Included with ChatGPT plans, including Free (with lower usage limits)</td></tr>
+        <tr><th scope="row">Work on your files</th><td><strong>Local</strong> → <strong>Select folder</strong></td><td>Open a folder → environment <strong>Local</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Pick the one you already pay for. If you pay for neither, use Codex on the free plan. The rest of the workflow is the same either way: <em>describe, review, revise, commit.</em></p>
+
+    <h3 id="why-git">3 · Why Git and GitHub?</h3>
+    <p>Without version control you end up with files like <code>index_final_v2_REAL.html</code>. And when an agent rewrites your page and breaks it, there's no way back. Git solves both problems.</p>
+    <div class="gitwhat">
+      <div><strong>Git</strong> is a tool on your laptop. It records the versions of a folder: what changed, when, and why.</div>
+      <div><strong>GitHub</strong> is a website. It stores an online copy of that folder with its full history, and it can publish the folder as a website (GitHub Pages).</div>
+    </div>
+    <ul class="benefits">
+      <li><strong>Undo anything.</strong> Every saved version is kept. If the agent makes a mess, you go back to the last good one.</li>
+      <li><strong>See exactly what changed.</strong> Git shows the lines that were added or removed (a <em>diff</em>). That's how you review an agent's work.</li>
+      <li><strong>Backup and share.</strong> Your work lives online, not just on your laptop. One link shares it, and you can work from any computer.</li>
+      <li><strong>Free publishing.</strong> GitHub Pages turns the folder into a public website. No server needed.</li>
+    </ul>
+
+    <h3>Commit and push, concretely</h3>
+    <p>There are two actions to remember. A <strong>commit</strong> takes a labelled snapshot of your folder and saves it <em>on your laptop</em>. A <strong>push</strong> uploads your new snapshots <em>to GitHub</em>, and only then does your live site update. It's like saving a draft with a note, then sending it. Try it:</p>
+    <div class="gitsim" id="gitsim">
+      <div class="gs-buttons">
+        <button type="button" class="btn secondary" data-gs="edit">1 · Agent edits a file</button>
+        <button type="button" class="btn secondary" data-gs="commit">2 · Commit</button>
+        <button type="button" class="btn secondary" data-gs="push">3 · Push</button>
+        <button type="button" class="linkbtn" data-gs="reset">reset</button>
+      </div>
+      <div class="gs-row"><span class="gs-label">Your laptop</span><div class="gs-track" id="gs-local"></div></div>
+      <div class="gs-row"><span class="gs-label">GitHub + your live site</span><div class="gs-track" id="gs-remote"></div></div>
+      <p class="gs-msg" id="gs-msg" aria-live="polite"></p>
+    </div>
+
+    <h3>How the pieces fit</h3>
+    <p>Click each stage to see what happens there.</p>
+    <ol class="pipeline" id="pipeline">
+      <li><button type="button" data-node="folder" aria-pressed="true"><span class="where">Your laptop</span><span class="what">Project folder</span></button></li>
+      <li><button type="button" data-node="agent" aria-pressed="false"><span class="where">Your laptop</span><span class="what">Agent edits files</span></button></li>
+      <li><button type="button" data-node="commit" aria-pressed="false"><span class="where">GitHub Desktop</span><span class="what">Commit</span></button></li>
+      <li><button type="button" data-node="push" aria-pressed="false"><span class="where">GitHub Desktop</span><span class="what">Push</span></button></li>
+      <li><button type="button" data-node="github" aria-pressed="false"><span class="where">github.com</span><span class="what">Repository</span></button></li>
+      <li><button type="button" data-node="pages" aria-pressed="false"><span class="where">The internet</span><span class="what">Pages → live URL</span></button></li>
+    </ol>
+    <div class="pipeline-detail" id="pipeline-detail" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ WORKING WITH AGENTS ============ -->
+  <section id="principles">
+    <h2>Working with an agent: six principles</h2>
+    <p>A coding agent is fast, capable and confident, and it only knows what you tell it. When something is missing, it fills the gap with a plausible guess. These principles keep you in charge. They apply to every tool and every task, not just this website.</p>
+    <ol class="principles">
+      <li><strong>Give it context.</strong> Say what this folder is, who the result is for, and where it will run.
+        <span class="eg">"This folder is my GitHub Pages repo for a college course."</span></li>
+      <li><strong>Say what "done" looks like.</strong> Be concrete, and ask for one change at a time. Describe what you <em>see</em>, not what you guess.
+        <span class="eg">"On my phone the menu overlaps the title. Fix only the menu."</span></li>
+      <li><strong>Set limits.</strong> Say what it must not do, add, or invent.
+        <span class="eg">"Use only the text I give you. Plain HTML and CSS, no frameworks."</span></li>
+      <li><strong>Plan before it acts.</strong> For anything bigger than a small fix, ask for a plan first, or let it ask <em>you</em> questions.
+        <span class="eg">"Before editing, show me your plan, and ask me up to 3 questions about anything unclear."</span></li>
+      <li><strong>You review everything.</strong> Check the actual result yourself, in the browser, sentence by sentence. "Done!" from the agent is a claim, not proof.
+        <span class="eg">"List every file you changed and what you changed in each."</span></li>
+      <li><strong>Save often, undo freely.</strong> Commit whenever something works. If a change goes badly, go back to the last commit instead of arguing with the agent.
+        <span class="eg">"Undo your last change."</span></li>
+    </ol>
+
+    <h3>Your first request</h3>
+    <p>Write it yourself. A few sentences that follow the principles are enough. Here's what one can look like:</p>
+    <div class="prompt"><div class="bar"><span>Example first request</span><button type="button" class="copy">Copy</button></div>
+<pre>This folder is my GitHub Pages repo for a college course. Build a simple one-page personal website: an index.html with a linked style.css, plain HTML and CSS only. Include About, Interests and Project interests sections, using only the text I give below. Don't add facts, links or achievements I didn't write. Keep it readable on a phone. Add a footer saying "Built with [tool]. Text written by [my name]." Before editing anything, show me your plan and wait for my OK.
+
+[paste your content here]</pre></div>
+    <p class="muted small">It's short, but every principle is there: context (line 1), done (the sections), limits (no invented facts, no frameworks), plan first (the last line). You'll do the reviewing and saving.</p>
+
+    <details class="optional-builder" id="builder">
+      <summary><span>Optional: prompt builder</span> <span class="muted small">Stuck? Fill in a form and get a starter request.</span></summary>
+      <p class="small muted" style="margin-top:.8rem">Everything stays in this browser. Nothing is sent anywhere.</p>
+    <div class="builder">
+      <form id="builder-form" autocomplete="off" onsubmit="return false">
+        <div class="field">
+          <label for="f-name">Name</label>
+          <input type="text" id="f-name" data-field="name" placeholder="Jordan Rivera">
+        </div>
+        <div class="field">
+          <label for="f-about">About you (2–4 sentences, in your own words)</label>
+          <textarea id="f-about" data-field="about" placeholder="I'm a sophomore thinking about majoring in Political Science. I grew up in…"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-interests">Interests (one per line)</label>
+          <textarea id="f-interests" data-field="interests" placeholder="Local elections&#10;Urban transit&#10;Film photography"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-pint">Project interests: what kinds of course projects you'd like to work on</label>
+          <textarea id="f-pint" data-field="pint" placeholder="e.g. how campaigns use AI for voter outreach; AI in local government; I'm happy to do the data work"></textarea>
+          <p class="hint">This helps classmates with similar interests find you as a group partner for the final project.</p>
+        </div>
+        <div class="field">
+          <label for="f-pdone">Something you've worked on (optional)</label>
+          <textarea id="f-pdone" data-field="pdone" style="min-height:3.5rem" placeholder="A class paper, a club, a job, a creative project…"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-links">Links (optional, one per line)</label>
+          <textarea id="f-links" data-field="links" style="min-height:3.5rem" placeholder="LinkedIn: https://…"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-style">Look and feel</label>
+          <select id="f-style" data-field="style">
+            <option value="clean and minimal: lots of white space, one accent color, a serif font for headings">Clean and minimal</option>
+            <option value="warm and editorial: off-white background, serif body text, like a magazine page">Warm and editorial</option>
+            <option value="bold and modern: large headings, a strong accent color, a sans-serif font">Bold and modern</option>
+            <option value="dark mode: dark background, light text, with good contrast">Dark mode</option>
+            <option value="custom">Something else (describe below)…</option>
+          </select>
+          <input type="text" id="f-style-custom" data-field="stylecustom" placeholder="Describe the look you want" style="margin-top:.5rem;display:none">
+        </div>
+        <p class="privacy-note">Saved in this browser's local storage so you don't lose it. <button type="button" class="linkbtn" id="clear-form">Clear my content</button></p>
+      </form>
+
+      <div class="out">
+        <div class="prompt"><div class="bar"><span>Starter request · for <span class="u-tool">Claude Code</span></span><button type="button" class="copy" data-copy-target="gen-prompt">Copy</button></div>
+<pre id="gen-prompt"></pre></div>
+        <p class="muted small">Highlighted text = still to fill in. Before you send it, compare it with the principles above: can you spot each one? Edit it so it sounds like you.</p>
+      </div>
+    </div>
+    </details>
+  </section>
+
+  <!-- ============ STEPS ============ -->
+  <section id="steps">
+    <h2>The steps</h2>
+    <p>Do steps 0 and 1 before section if you can. Start the rest in section, where help is around, and keep going at home. There's no need to finish in section. Click a step to open it, and mark it done when you finish.</p>
+
+    <ol class="steps" id="step-list">
+
+      <!-- STEP 0 -->
+      <li class="step" data-step="0">
+        <details>
+          <summary><span class="num">0</span><span class="title">Accounts and apps<small>GitHub, GitHub Desktop, and your agent app</small></span><span class="when">before section</span></summary>
+          <div class="body">
+            <ol>
+              <li><strong>Create a GitHub account</strong> at <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>. Your username becomes part of your website address (<code>username.github.io</code>), so pick one you're happy to share. A short, professional name is best.</li>
+              <li><strong>Install GitHub Desktop</strong> from <a href="https://desktop.github.com" target="_blank" rel="noopener">desktop.github.com</a>, open it, and sign in with your GitHub account.</li>
+              <li data-only="claude"><strong>Install the Claude desktop app</strong> from <a href="https://claude.com/download" target="_blank" rel="noopener">claude.com/download</a> and sign in. Click the <strong>Code</strong> tab at the top. If it asks you to upgrade, your plan doesn't include Claude Code. Switch this guide to <button type="button" class="linkbtn" data-route-btn="codex">Codex</button> instead.</li>
+              <li data-only="codex"><strong>Install the ChatGPT desktop app</strong> from <a href="https://chatgpt.com/download" target="_blank" rel="noopener">chatgpt.com/download</a> and sign in with your ChatGPT account. Find the mode menu and switch it from <strong>ChatGPT</strong> to <strong>Codex</strong>.</li>
+            </ol>
+            <p class="expect"><strong>You're ready when:</strong> GitHub Desktop shows your account (<em>Settings → Accounts</em>), and <span data-only="claude">the Code tab opens without an upgrade prompt.</span><span data-only="codex">Codex mode opens and offers to work in a folder.</span></p>
+            <button type="button" class="done-toggle" data-done="0" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 1 -->
+      <li class="step" data-step="1">
+        <details>
+          <summary><span class="num">1</span><span class="title">Create your repository<small>A GitHub project with a special name, copied to your laptop</small></span></summary>
+          <div class="body">
+            <p>A <strong>repository</strong> (repo) is a project folder that Git tracks. GitHub has one rule for personal sites: if the repo is named exactly <code><span class="u-user">YOUR-USERNAME</span>.github.io</code>, it is published at that address.</p>
+            <h3>On github.com</h3>
+            <ol>
+              <li>Click <strong>+</strong> (top right) → <strong>New repository</strong>.</li>
+              <li>Repository name: <code><span class="u-user">YOUR-USERNAME</span>.github.io</code>. It must match your username exactly.</li>
+              <li>Visibility: <strong>Public</strong>. Turn <strong>Add README</strong> on.</li>
+              <li>Click <strong>Create repository</strong>.</li>
+            </ol>
+            <h3>In GitHub Desktop</h3>
+            <ol>
+              <li><strong>File → Clone repository…</strong> → choose <code><span class="u-user">YOUR-USERNAME</span>.github.io</code> from the list.</li>
+              <li>Note the <strong>Local path</strong>. By default it's <code>Documents/GitHub/<span class="u-user">YOUR-USERNAME</span>.github.io</code>. Click <strong>Clone</strong>.</li>
+            </ol>
+            <p class="expect"><strong>You're ready when:</strong> GitHub Desktop shows <em>Current repository: <span class="u-user">YOUR-USERNAME</span>.github.io</em>, and <strong>Repository → Show in Finder</strong> (Mac) or <strong>Show in Explorer</strong> (Windows) opens a folder containing <code>README.md</code>.</p>
+            <button type="button" class="done-toggle" data-done="1" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 2 -->
+      <li class="step" data-step="2">
+        <details>
+          <summary><span class="num">2</span><span class="title">Open that folder in your agent<small>and check that it can see your files</small></span></summary>
+          <div class="body">
+            <div data-only="claude">
+              <ol>
+                <li>In the Claude app, open the <strong>Code</strong> tab.</li>
+                <li>Choose <strong>Local</strong>, click <strong>Select folder</strong>, and pick <code>Documents/GitHub/<span class="u-user">YOUR-USERNAME</span>.github.io</code>.</li>
+                <li>Next to the send button, set the permission mode to <strong>Manual</strong> for today. Claude will show you each change and wait for <strong>Accept</strong> or <strong>Reject</strong>. It's slower, but you'll see exactly what an agent does. You can switch to <strong>Accept edits</strong> once you're comfortable.</li>
+              </ol>
+            </div>
+            <div data-only="codex">
+              <ol>
+                <li>In the ChatGPT app, switch the mode menu to <strong>Codex</strong>.</li>
+                <li>Open a folder and pick <code>Documents/GitHub/<span class="u-user">YOUR-USERNAME</span>.github.io</code>.</li>
+                <li>Choose the <strong>Local</strong> environment, which works directly in that folder. Don't use Worktree or Cloud today.</li>
+                <li>If Codex asks for permission to edit files or run a command, read the request before you approve it.</li>
+              </ol>
+            </div>
+            <p>Your first message is a warm-up. It changes nothing, and it proves the agent is looking at the right folder:</p>
+            <div class="prompt"><div class="bar"><span>Warm-up prompt</span><button type="button" class="copy">Copy</button></div>
+<pre>What files are in this folder? In two sentences, explain what this project is and what GitHub Pages will do with it. Don't change anything yet.</pre></div>
+            <p class="expect"><strong>You're ready when:</strong> the agent mentions <code>README.md</code> and your repo name. If it describes some other folder, you opened the wrong one. Go back to step 2.</p>
+            <button type="button" class="done-toggle" data-done="2" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 3 -->
+      <li class="step" data-step="3">
+        <details>
+          <summary><span class="num">3</span><span class="title">Write your content yourself<small>Human first: the words on the site are yours</small></span></summary>
+          <div class="body">
+            <p>Before you ask the agent for anything, write your content in any notes app: a short About, a few Interests, and your Project interests. The agent handles the structure and styling. You supply the substance. This matches the course AI policy: <em>written work must be in your own words</em>.</p>
+            <ul>
+              <li>2–4 sentences are plenty for About. Write the way you'd introduce yourself at a club fair.</li>
+              <li><strong>Project interests:</strong> what kinds of projects you'd like to work on in this course (topics, questions, or the kind of work you enjoy, like data, writing, or design). Classmates will use this to find group partners for the final project. You can also mention something you've worked on before.</li>
+              <li>Only include what you're comfortable having online. Leave out your phone number, home address, and student ID.</li>
+            </ul>
+            <button type="button" class="done-toggle" data-done="3" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 4 -->
+      <li class="step" data-step="4">
+        <details>
+          <summary><span class="num">4</span><span class="title">Write your request and send it<small>Plan first, then let it edit</small></span></summary>
+          <div class="body">
+            <ol>
+              <li>Write your first request yourself, following the <a href="#principles">six principles</a>. The example there is a good starting point. Paste your content from step 3 below it and send. If you're stuck, the optional <a href="#builder" data-open-builder>prompt builder</a> can draft one for you.</li>
+              <li>Your request asks the agent to <strong>propose a plan and wait</strong>. Read the plan. If something is off (e.g., "I'll add a contact form"), reply with the correction. When it looks right, reply <em>"Looks good, go ahead."</em></li>
+              <li><span data-only="claude">In Manual mode, each file change appears as a diff with <strong>Accept</strong>/<strong>Reject</strong>. Skim it, then accept.</span><span data-only="codex">Approve file edits when asked. Codex lists the files it changed at the end of its reply.</span></li>
+            </ol>
+            <p class="expect"><strong>You're ready when:</strong> your folder contains <code>index.html</code> (and probably <code>style.css</code>).</p>
+            <button type="button" class="done-toggle" data-done="4" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 5 -->
+      <li class="step" data-step="5">
+        <details>
+          <summary><span class="num">5</span><span class="title">Look at it and review it critically<small>You are the reviewer, not the agent</small></span></summary>
+          <div class="body">
+            <p>Open <code>index.html</code> in your browser. Double-click it in Finder or Explorer, or drag it onto a browser window.<span data-only="claude"> You can also ask Claude to "open a preview of index.html."</span> Then check:</p>
+            <ul>
+              <li><strong>Accuracy.</strong> Read every sentence. Did the agent add anything you didn't write, like a made-up award, a university you didn't attend, or an extra link? Agents fill gaps with plausible fiction.</li>
+              <li><strong>Phone width.</strong> Narrow the browser window until it's phone-sized. Is the text still readable? Does the navigation still work?</li>
+              <li><strong>Links.</strong> Click every one.</li>
+              <li><strong>Taste.</strong> Is there anything you'd be embarrassed to show a professor? That goes on your revision list.</li>
+            </ul>
+            <button type="button" class="done-toggle" data-done="5" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 6 -->
+      <li class="step" data-step="6">
+        <details>
+          <summary><span class="num">6</span><span class="title">Commit and push your first version<small>Save a version, then send it to GitHub</small></span></summary>
+          <div class="body">
+            <ol>
+              <li>Switch to GitHub Desktop. The <strong>Changes</strong> tab lists the new files. Click one to see its diff (green = added lines).</li>
+              <li>In the <strong>Summary</strong> box (bottom left), describe the change, e.g. <code>Add first version of personal site</code>.</li>
+              <li>Click <strong>Commit to main</strong>. This creates a version on your laptop that you can always return to.</li>
+              <li>Click <strong>Push origin</strong> (top bar). This sends your commits to GitHub.</li>
+            </ol>
+            <p class="warn">Commit ≠ push. A commit saves a version <em>locally</em>. Nothing reaches GitHub, or your live site, until you <strong>push</strong>.</p>
+            <p class="expect"><strong>You're ready when:</strong> on github.com, your repo shows <code>index.html</code> and your commit message.</p>
+            <button type="button" class="done-toggle" data-done="6" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 7 -->
+      <li class="step" data-step="7">
+        <details>
+          <summary><span class="num">7</span><span class="title">Turn on GitHub Pages and visit your site<small>One setting, then wait a few minutes</small></span></summary>
+          <div class="body">
+            <ol>
+              <li>On github.com, open your repo → <strong>Settings</strong> → <strong>Pages</strong> (left sidebar).</li>
+              <li>Under <strong>Build and deployment</strong>, set Source to <strong>Deploy from a branch</strong>. Set Branch to <strong>main</strong> and folder to <strong>/ (root)</strong>, then click <strong>Save</strong>. Your <code>username.github.io</code> repo may already be set up this way.</li>
+              <li>Wait. It can take up to <strong>10 minutes</strong>. The Pages settings page shows the address once the site is live.</li>
+              <li>Visit <a class="u-link" href="#" target="_blank" rel="noopener"><span class="u-url">https://YOUR-USERNAME.github.io</span></a>. Open it on your phone too.</li>
+            </ol>
+            <p class="expect"><strong>You're ready when:</strong> your page, not the README, loads at your address.</p>
+            <button type="button" class="done-toggle" data-done="7" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+      <!-- STEP 8 -->
+      <li class="step" data-step="8">
+        <details>
+          <summary><span class="num">8</span><span class="title">Improve it (optional, recommended)<small>Specific requests, reviewed, then committed</small></span></summary>
+          <div class="body">
+            <p>Your site is live, which is all the assignment needs. To make it better, repeat the loop: <strong>describe → review → revise → commit → push</strong>. Make one change at a time, and commit each one, so you can always go back. Click a suggestion to copy it, or write your own:</p>
+            <div class="chips" id="followups">
+              <button type="button" class="chip" data-copy-text="On a phone-width screen, the navigation wraps badly. Fix only the navigation; don't change anything else. Tell me which lines you changed.">Fix one thing only</button>
+              <button type="button" class="chip" data-copy-text="Show my Interests as a row of small tags instead of a paragraph. Keep my exact wording.">Interests as tags</button>
+              <button type="button" class="chip" data-copy-text="Review this page for accessibility problems (color contrast, heading order, alt text, keyboard navigation). List the problems first; don't fix anything until I reply.">Accessibility check</button>
+              <button type="button" class="chip" data-copy-text="Add a short 'Now' section below About that says: [write 1–2 sentences about what you're working on this quarter]. Match the existing style.">Add a “Now” section</button>
+              <button type="button" class="chip" data-copy-text="Compare the text on the page with the content I gave you. List anything you added, changed, or left out.">Audit for invented content</button>
+              <button type="button" class="chip" data-copy-text="Undo your last change and tell me exactly what you reverted.">Undo last change</button>
+              <button type="button" class="chip" data-copy-text="Explain what each file in this folder does and how index.html and style.css are connected, in plain language, for someone who has never coded.">Explain my files</button>
+            </div>
+            <p class="muted small" id="chip-status" aria-live="polite"></p>
+            <p>After each revision: refresh the page in your browser and check it. If you like the change, commit with a clear message (<code>Show interests as tags</code>, not <code>update</code>) and push. If you don't, reject the change, or ask the agent to undo it.</p>
+            <button type="button" class="done-toggle" data-done="8" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+
+    </ol>
+
+    <div class="callout" style="margin-top:1.5rem">
+      <h3>Then submit</h3>
+      <p style="margin:0">When your site is live, submit <strong>one link</strong> on Canvas: <code class="u-url">https://YOUR-USERNAME.github.io</code>. Check it in a private window first. Details are in <a href="assignment.html">the assignment</a>. Want a picture of the finished product? Here's an <a href="example/index.html" target="_blank" rel="noopener">example site</a> built this way (the person is fictional).</p>
+    </div>
+  </section>
+
+  <!-- ============ SAFETY ============ -->
+  <section id="safety">
+    <h2>You are the reviewer</h2>
+    <div class="table-scroll">
+    <table>
+      <tbody>
+        <tr><th scope="row">Read before you approve</th><td>When the agent asks to run a command you don't understand, ask it: <em>"What does that command do, and why do you need it?"</em> If you're not sure, say no. You can always ask for another approach.</td></tr>
+        <tr><th scope="row">Never paste secrets</th><td>No passwords, API keys, or personal ID numbers in prompts or in the site. GitHub will handle sign-in itself.</td></tr>
+        <tr><th scope="row">Public means public</th><td>Anything you push to a public repo can be seen, copied, and archived, including in the commit history. Deleting a file later doesn't erase it from earlier commits.</td></tr>
+        <tr><th scope="row">Stay in the folder</th><td>The agent should only work in your repo folder. If it wants to touch files elsewhere on your computer, stop and ask why.</td></tr>
+        <tr><th scope="row">Disclose</th><td>Your footer credits the tool you used. That's the course AI-use policy in miniature: credit AI the way you'd credit a collaborator.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- ============ TROUBLESHOOTING ============ -->
+  <section id="stuck">
+    <h2>Stuck?</h2>
+    <p>First ask your agent. Describe exactly what you see: <em>"GitHub Desktop says 'rejected — fetch first'. What does that mean, and what should I click?"</em> Then check here, then ask a neighbor, then raise your hand.</p>
+    <label class="visually-hidden" for="faq-q">Search troubleshooting</label>
+    <input type="text" id="faq-q" class="faq-search" placeholder="Search: 404, push, upgrade, folder…">
+    <div class="faq" id="faq">
+      <details data-keys="upgrade plan pay subscription code tab 403">
+        <summary>The Code tab asks me to upgrade (Claude)</summary>
+        <div>Claude Code needs a paid Claude plan (Pro or higher). Switch this guide to <button type="button" class="linkbtn" data-route-btn="codex">Codex</button>. It's included with ChatGPT plans, including Free with lower limits. Or pair with a neighbor today and sort out access later. Contact the teaching staff if cost is a barrier.</div>
+      </details>
+      <details data-keys="limit usage rate quota ran out">
+        <summary>I hit a usage limit</summary>
+        <div>Limits reset after a few hours. Meanwhile: keep your requests small and specific (they use less), switch to the other tool, or make small text edits yourself. <code>index.html</code> is just a text file, and you can open it in any editor.</div>
+      </details>
+      <details data-keys="folder find where select documents clone path">
+        <summary>I can't find my repo folder when selecting it in the agent</summary>
+        <div>In GitHub Desktop: <strong>Repository → Show in Finder / Show in Explorer</strong>. The window title shows the path. By default it's <code>Documents/GitHub/<span class="u-user">YOUR-USERNAME</span>.github.io</code>.</div>
+      </details>
+      <details data-keys="wrong folder cannot see files agent working directory">
+        <summary>The agent says it can't see my files, or describes a different folder</summary>
+        <div>Ask it: <em>"What is your current working directory?"</em> If it's not your repo, start a new session and select the right folder (step 2).</div>
+      </details>
+      <details data-keys="no changes github desktop empty nothing to commit">
+        <summary>GitHub Desktop shows "No local changes" after the agent edited files</summary>
+        <div>The agent was probably working in a different folder than the repo GitHub Desktop is tracking. Compare the two paths. Also check that the agent actually finished and saved (with Claude in Manual mode, did you click <strong>Accept</strong>?).</div>
+      </details>
+      <details data-keys="404 not found site there isn't a github pages site here">
+        <summary>My address shows a 404 "There isn't a GitHub Pages site here"</summary>
+        <div>Check four things: (1) the repo is named <em>exactly</em> <code>username.github.io</code> with <em>your</em> username; (2) it's <strong>Public</strong>; (3) <strong>Settings → Pages</strong> is set to <em>Deploy from a branch · main · / (root)</em>; (4) you've waited up to 10 minutes after your first push.</div>
+      </details>
+      <details data-keys="readme shows instead index">
+        <summary>My site shows the README instead of my page</summary>
+        <div>GitHub Pages looks for a file named exactly <code>index.html</code> (all lowercase) at the top level of the repo. Check the file name and location on github.com. Also check that you pushed after committing.</div>
+      </details>
+      <details data-keys="changes not showing update old version cache refresh">
+        <summary>I pushed, but the live site still shows the old version</summary>
+        <div>Wait 1–2 minutes, then hard-refresh: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Mac) or <kbd>Ctrl</kbd>+<kbd>F5</kbd> (Windows). Check the <strong>Actions</strong> tab in your repo to see if the deployment is still running.</div>
+      </details>
+      <details data-keys="no style css broken unstyled plain">
+        <summary>The live page has no styling (plain black text), but it looked fine locally</summary>
+        <div>Usually <code>style.css</code> wasn't committed, or the link in <code>index.html</code> uses a different capitalization (<code>Style.css</code> vs <code>style.css</code>). File names are case-sensitive on GitHub Pages but not on your Mac. Ask the agent: <em>"Check that every file index.html links to exists with the exact same name."</em></div>
+      </details>
+      <details data-keys="push rejected fetch first pull behind">
+        <summary>Push fails: "rejected" or "fetch first"</summary>
+        <div>GitHub has a change your laptop doesn't, usually because you edited something on github.com. In GitHub Desktop, click <strong>Fetch origin</strong>, then <strong>Pull origin</strong>, then <strong>Push origin</strong>.</div>
+      </details>
+      <details data-keys="invented made up fake hallucination award wrong facts">
+        <summary>The agent invented things about me</summary>
+        <div>This is normal agent behavior, which is why you review. Ask: <em>"Compare the page with the content I gave you and remove anything I didn't write."</em> Then read it again yourself.</div>
+      </details>
+      <details data-keys="windows txt extension index.html.txt hidden">
+        <summary>(Windows) My file is called index.html.txt</summary>
+        <div>Windows hides file extensions by default. In File Explorer: <strong>View → Show → File name extensions</strong>, then rename the file to <code>index.html</code>. Better: have the agent create the files, and this won't happen.</div>
+      </details>
+      <details data-keys="privacy public photo personal information">
+        <summary>I have privacy concerns about a public page</summary>
+        <div>Share only what you're comfortable with. A photo and contact details aren't required. If you have concerns about hosting a public page at all, talk to your TA about an alternative.</div>
+      </details>
+      <details data-keys="undo mistake revert go back broke">
+        <summary>I (or the agent) broke the site. How do I go back?</summary>
+        <div>If you haven't committed yet: in GitHub Desktop, right-click the changed file → <strong>Discard changes</strong>. If you already committed: open the <strong>History</strong> tab, right-click the bad commit → <strong>Revert changes in commit</strong>. This is why you commit often.</div>
+      </details>
+      <p class="empty" id="faq-empty">No match. Ask your agent, a neighbor, or your TA.</p>
+    </div>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="glossary">
+    <h2>Words you'll hear</h2>
+    <dl class="gloss">
+      <dt>Repository (repo)</dt><dd>A project folder whose history Git tracks. Yours lives both on your laptop and on GitHub.</dd>
+      <dt>Clone</dt><dd>Copy a repo from GitHub to your laptop, keeping them connected.</dd>
+      <dt>Commit</dt><dd>A saved version with a message describing what changed. Like a save point in a game.</dd>
+      <dt>Push</dt><dd>Send your new commits from your laptop up to GitHub.</dd>
+      <dt>Pull / Fetch</dt><dd>Bring changes from GitHub down to your laptop.</dd>
+      <dt>Branch <code>main</code></dt><dd>The main line of your project's history. Today you only use this one.</dd>
+      <dt>Diff</dt><dd>A view of exactly which lines were added (green) or removed (red).</dd>
+      <dt>GitHub Pages</dt><dd>GitHub's free hosting: it turns the files in a repo into a public website.</dd>
+      <dt>Permission mode</dt><dd>How much the agent may do without asking you first. Start cautious.</dd>
+      <dt>HTML / CSS</dt><dd>HTML is the content and structure of a page; CSS is how it looks. Both are plain text files.</dd>
+    </dl>
+  </section>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section 1 workshop guide. Product steps checked against the official Claude Code, ChatGPT/Codex, GitHub Desktop and GitHub Pages documentation on Sep 27, 2026. App menus change often, so if a label doesn't match, ask your agent or TA.</p>
+    <p>AI-use note: drafted with Claude Code (Claude Opus 5.5) and reviewed by the teaching team. <button type="button" class="linkbtn" id="reset-all">Reset my progress on this page</button></p>
+  </footer>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
