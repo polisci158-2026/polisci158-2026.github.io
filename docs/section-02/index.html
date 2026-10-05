@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 2 · Train a neural network, then question it · POLISCI 158</title>
+<meta name="description" content="POLISCI 158 Section 2 lab: review how machines learn, train a small neural network in your browser, and test a fraud-flagging model for fairness.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">POLISCI 158 · Section 2</a>
+    <nav aria-label="Page sections">
+      <a href="#recap">Recap</a>
+      <a href="#part1">Part 1</a>
+      <a href="#part2">Part 2</a>
+      <a href="#part3">Part 3</a>
+      <a href="#submit">Submit</a>
+      <a href="assignment.html">Assignment</a>
+      <a href="../index.html">All sections</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <p class="eyebrow">Week 3 · Section 2 · Lab</p>
+    <h1>Train a neural network, then question it</h1>
+    <p class="lede">On Wednesday you saw how machines learn from examples. Today you'll train a small neural network yourself, watch it overfit, and then test a fraud-flagging model the way an auditor would. Everything runs in this page. There's nothing to install.</p>
+
+    <div class="controls" aria-label="Your details">
+      <div>
+        <label for="s-name">Your name</label>
+        <input id="s-name" type="text" autocomplete="name" spellcheck="false" placeholder="e.g. Jordan Rivera">
+        <p class="hint">Goes on your submission. Stored only in this browser.</p>
+      </div>
+      <div>
+        <label for="s-partner">Partner's name <span class="muted" style="font-weight:400">(optional)</span></label>
+        <input id="s-partner" type="text" autocomplete="off" spellcheck="false" placeholder="if you worked in a pair">
+        <p class="hint">Pairs can share a laptop, but each person submits their own answers.</p>
+      </div>
+    </div>
+
+    <div class="progress" aria-live="polite">
+      <div class="bar" aria-hidden="true"><span id="progress-fill"></span></div>
+      <span id="progress-text">0 of 9 items done</span>
+    </div>
+
+    <ul class="outcomes">
+      <li><strong>Part 1 · 12 min</strong>Train a network to predict which bills get out of committee. Find the right size, then watch it overfit.</li>
+      <li><strong>Part 2 · 12 min</strong>Train a model to flag benefit claims for fraud checks. Then check who gets flagged.</li>
+      <li><strong>Part 3 · 4 min</strong>Answer Wednesday's question in your own words, then submit on Canvas before you leave.</li>
+    </ul>
+  </section>
+
+  <!-- ============ RECAP ============ -->
+  <section id="recap">
+    <h2>Recap: how machines learn</h2>
+    <p class="muted">The five ideas from Session 3 that you'll use today. Your TA will go over them at the start of section; come back here if you need a reminder.</p>
+
+    <h3>1 · Where machine learning fits</h3>
+    <div class="nest" aria-label="Nested diagram">
+      <div><b>AI</b> systems that mimic human reasoning and decisions
+        <div><b>Machine learning</b> learns rules or patterns from data
+          <div><b>Deep learning</b> machine learning with many-layered neural networks
+            <div><b>Generative AI</b> learns what data look like, to make new content
+              <div><b>LLMs</b> generative AI built on transformers, trained on huge amounts of text</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>2 · Programming vs. machine learning</h3>
+    <div class="compare-flow">
+      <div><span class="where">Programming</span><span class="pill">Rules (a person writes them)</span> + <span class="pill">Data</span> → <span class="pill out">Answers</span></div>
+      <div><span class="where">Machine learning</span><span class="pill">Data</span> + <span class="pill">Answers (labels)</span> → <span class="pill out">A rule learned from the examples</span></div>
+    </div>
+
+    <h3>3 · Three kinds of learning</h3>
+    <p class="muted small">Try it: which kind of learning is each task?</p>
+    <div class="sorter" id="sorter">
+      <div class="scenario" data-answer="sup">
+        <span>Predict whether a bill will pass, from 10,000 past bills marked passed or failed.</span>
+        <span class="choices"><button type="button" data-pick="sup">Supervised</button><button type="button" data-pick="unsup">Unsupervised</button><button type="button" data-pick="rl">Reinforcement</button></span>
+        <p class="feedback">Every example comes with the answer (passed or failed). That's supervised learning, and it's what you'll do in Part 1.</p>
+      </div>
+      <div class="scenario" data-answer="unsup">
+        <span>Group legislators who vote alike, with no labels given.</span>
+        <span class="choices"><button type="button" data-pick="sup">Supervised</button><button type="button" data-pick="unsup">Unsupervised</button><button type="button" data-pick="rl">Reinforcement</button></span>
+        <p class="feedback">There are no answers to learn from, only patterns to find. That's unsupervised learning.</p>
+      </div>
+      <div class="scenario" data-answer="rl">
+        <span>Improve a chatbot using people's thumbs-up and thumbs-down on its answers.</span>
+        <span class="choices"><button type="button" data-pick="sup">Supervised</button><button type="button" data-pick="unsup">Unsupervised</button><button type="button" data-pick="rl">Reinforcement</button></span>
+        <p class="feedback">The model acts, then gets a reward or penalty. That's reinforcement learning. You'll see it again in the post-training session.</p>
+      </div>
+      <div class="scenario" data-answer="sup">
+        <span>Flag benefit claims for review, learning from past claims marked correct or incorrect.</span>
+        <span class="choices"><button type="button" data-pick="sup">Supervised</button><button type="button" data-pick="unsup">Unsupervised</button><button type="button" data-pick="rl">Reinforcement</button></span>
+        <p class="feedback">Supervised again: the past claims are labeled. But who wrote those labels? Keep that question in mind for Part 2.</p>
+      </div>
+    </div>
+
+    <h3>4 · Overfitting: training error vs. new-data error</h3>
+    <div class="recap-fig">
+      <svg viewBox="0 0 360 200" role="img" aria-label="As a model gets more flexible, training error keeps falling, while error on new data falls and then rises.">
+        <line x1="40" y1="170" x2="345" y2="170" stroke="#62666c"/>
+        <line x1="40" y1="170" x2="40" y2="15" stroke="#62666c"/>
+        <path d="M45 40 C 110 120, 170 150, 340 162" fill="none" stroke="#161719" stroke-width="2.5"/>
+        <path d="M45 50 C 110 125, 140 130, 170 128 S 260 95, 340 40" fill="none" stroke="#8c1515" stroke-width="2.5" stroke-dasharray="6 4"/>
+        <line x1="165" y1="22" x2="165" y2="170" stroke="#62666c" stroke-dasharray="2 3"/>
+        <text x="250" y="146" font-size="12" fill="#161719">training data</text>
+        <text x="196" y="52" font-size="12" fill="#8c1515">new data</text>
+        <text x="60" y="190" font-size="11" fill="#62666c">too simple</text>
+        <text x="140" y="190" font-size="11" fill="#62666c">about right</text>
+        <text x="270" y="190" font-size="11" fill="#62666c">too flexible</text>
+        <text x="10" y="100" font-size="11" fill="#62666c" transform="rotate(-90 14 100)">error</text>
+      </svg>
+      <p>A flexible enough model can memorize its training examples, noise and all, so its <strong>training error</strong> keeps falling. What matters is the error on examples it has <em>never seen</em>: the <strong>test error</strong>. That falls at first, then rises once the model starts memorizing. This is <strong>overfitting</strong>. That's why we always hold back some data to test on.</p>
+    </div>
+
+    <h3>5 · Neurons and gradient descent</h3>
+    <div class="recap-fig">
+      <svg viewBox="0 0 360 170" role="img" aria-label="A neuron: inputs x1 to x3 are multiplied by weights, summed with a bias, passed through a bend, and give an output.">
+        <g font-size="13" fill="#161719">
+          <circle cx="30" cy="35" r="16" fill="#fff" stroke="#161719"/><text x="22" y="40">x1</text>
+          <circle cx="30" cy="85" r="16" fill="#fff" stroke="#161719"/><text x="22" y="90">x2</text>
+          <circle cx="30" cy="135" r="16" fill="#fff" stroke="#161719"/><text x="22" y="140">x3</text>
+          <line x1="46" y1="38" x2="150" y2="80" stroke="#8c1515"/><text x="88" y="48" fill="#8c1515">w1</text>
+          <line x1="46" y1="85" x2="150" y2="85" stroke="#8c1515"/><text x="88" y="80" fill="#8c1515">w2</text>
+          <line x1="46" y1="132" x2="150" y2="90" stroke="#8c1515"/><text x="88" y="128" fill="#8c1515">w3</text>
+          <rect x="150" y="60" width="110" height="50" rx="8" fill="#fff" stroke="#161719"/>
+          <text x="160" y="80" font-size="11">w1x1 + w2x2 + w3x3 + b</text>
+          <path d="M175 104 C 195 104, 200 97, 205 95 S 215 89, 235 89" fill="none" stroke="#161719"/>
+          <text x="238" y="102" font-size="10" fill="#62666c">bend</text>
+          <line x1="260" y1="85" x2="310" y2="85" stroke="#161719"/>
+          <text x="314" y="90">output</text>
+        </g>
+      </svg>
+      <div>
+        <p>A neuron takes a <strong>weighted sum</strong> of its inputs, then bends it. A network stacks layers of neurons. The <strong>weights</strong> are the numbers it learns. It learns them by <strong>gradient descent</strong>:</p>
+        <ol class="small">
+          <li>Start with random weights.</li>
+          <li>Measure the error (the <strong>loss</strong>) on the training examples.</li>
+          <li>Change every weight a little in the direction that lowers the error.</li>
+          <li>Repeat. One pass through all the training examples is one <strong>epoch</strong>.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section id="part1">
+    <h2>Part 1 · Will the bill get out of committee?</h2>
+    <p>Each dot is a bill in a made-up legislature. The network sees two numbers about each bill:</p>
+    <ul>
+      <li><strong>Sponsor's ideology</strong> (left to right): how far the sponsor is from the chamber's median member.</li>
+      <li><strong>Majority-party cosponsors</strong> (bottom to top): what share of the bill's cosponsors come from the majority party.</li>
+    </ul>
+    <p>Its job is to predict whether the bill got <span class="key k-pass">out of committee</span> or <span class="key k-fail">died in committee</span>. The background shows the network's guess for every possible bill. <strong>Test accuracy</strong> is the share of 1,000 <em>new</em> bills it gets right.</p>
+    <p class="muted small">The data are simulated. In this made-up chamber, moderate sponsors need less majority support, and sponsors far from the median need a lot. The network doesn't know that rule; it has to learn it from the dots.</p>
+
+    <div class="lab" id="lab1">
+      <div class="lab-viz">
+        <div class="map-wrap">
+          <canvas id="map" width="340" height="340" aria-label="Decision map: the network's prediction for every combination of the two inputs, with the training bills as dots."></canvas>
+          <span class="axis-x">← left · sponsor's ideology · right →</span>
+          <span class="axis-y">majority cosponsors →</span>
+        </div>
+        <label class="small check-inline"><input type="checkbox" id="show-test"> Show the 1,000 test bills (faint)</label>
+      </div>
+      <div class="lab-ctrl">
+        <div class="ctrl-row">
+          <span class="ctrl-l" id="data-label">Training data</span>
+          <div class="segmented" role="group" aria-labelledby="data-label">
+            <button type="button" data-set="large" aria-pressed="true">200 bills</button>
+            <button type="button" data-set="small" aria-pressed="false">25 bills, messy</button>
+          </div>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-l">Hidden layers</span>
+          <div class="stepper"><button type="button" data-step="layers" data-d="-1" aria-label="Fewer layers">−</button><output id="layers-out">1</output><button type="button" data-step="layers" data-d="1" aria-label="More layers">+</button></div>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-l">Neurons per layer</span>
+          <div class="stepper"><button type="button" data-step="neurons" data-d="-1" aria-label="Fewer neurons">−</button><output id="neurons-out">1</output><button type="button" data-step="neurons" data-d="1" aria-label="More neurons">+</button></div>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-l" id="speed-label">Speed</span>
+          <div class="segmented" role="group" aria-labelledby="speed-label">
+            <button type="button" data-speed="60" aria-pressed="false">Slow</button>
+            <button type="button" data-speed="250" aria-pressed="true">Normal</button>
+            <button type="button" data-speed="1000" aria-pressed="false">Fast</button>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:.4rem">
+          <button type="button" class="btn" id="play">▶ Train</button>
+          <button type="button" class="btn secondary" id="reset">↺ Start over</button>
+        </div>
+        <p class="small muted" style="margin:.4rem 0 0">Changing the data or the network starts over from new random weights. Training stops on its own at epoch 3,000.</p>
+        <dl class="stats">
+          <dt>Epoch</dt><dd id="st-epoch">0</dd>
+          <dt>Training loss</dt><dd id="st-trl">–</dd>
+          <dt>Test loss</dt><dd id="st-tel">–</dd>
+          <dt>Training accuracy</dt><dd id="st-tra">–</dd>
+          <dt>Test accuracy</dt><dd id="st-tea" class="em">–</dd>
+          <dt>Lowest test loss</dt><dd id="st-best">–</dd>
+        </dl>
+      </div>
+      <div class="lab-chart">
+        <div class="chart-head"><span class="small"><span class="swatch sw-train"></span>training loss <span class="swatch sw-test"></span>test loss <span class="swatch sw-best"></span>lowest test loss</span></div>
+        <canvas id="chart" width="760" height="170" aria-label="Loss over epochs, for training and test data."></canvas>
+      </div>
+      <div class="lab-record">
+        <button type="button" class="btn" id="record1">Record this run</button>
+        <span class="small muted">Recorded runs go into your submission automatically.</span>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="runs" id="runs1">
+        <thead><tr><th>#</th><th>Data</th><th>Network</th><th>Epoch</th><th>Train acc.</th><th>Test acc.</th><th>Train loss</th><th>Test loss</th><th>Lowest test loss at</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">1A · One neuron</p>
+        <p>Data: <b>200 bills</b>. Network: <b>1 layer, 1 neuron</b>. Train to about epoch 500, pause, and <b>record</b>. What shape is the boundary between the colors? Why can't this network follow the curve in the dots?</p>
+        <textarea data-q="q1a" aria-label="Answer to 1A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">1B · Just big enough</p>
+        <p>Keep the 200 bills. Add neurons (and layers, if you like) until <b>test accuracy reaches 88%</b>. Give each network about 1,000 epochs: some get stuck for a while before they improve. What's the smallest network that gets there? Record it. How did training accuracy compare with test accuracy?</p>
+        <textarea data-q="q1b" aria-label="Answer to 1B"></textarea>
+      </li>
+      <li>
+        <p class="task-h">1C · Too much, too little data</p>
+        <p>Switch to <b>25 bills, messy</b> (a small sample with some coding errors). Network: <b>2 layers of 8 neurons</b>. Train to at least epoch 1,500 and record. What did the two loss lines do? About when was the test loss lowest? If this model were going to be used for real, when would you have stopped training, and why?</p>
+        <textarea data-q="q1c" aria-label="Answer to 1C"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section id="part2">
+    <h2>Part 2 · Which benefit claims get flagged?</h2>
+    <p>A fictional benefits agency wants a model to pick which claims get a fraud check. It can check <b>10% of claims</b>. The model learns from 2,000 past claims, each marked in the agency's records as <em>fraud</em> or <em>not fraud</em>. It's then tested on 2,000 new claims, and the 10% with the highest risk scores are flagged.</p>
+    <p>The agency can give the model up to four inputs:</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Input</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Income irregularity</th><td>Sudden jumps in reported income. <span class="muted">Always used.</span></td></tr>
+          <tr><th scope="row">Earlier corrections</th><td>How many times the claim was corrected before. <span class="muted">Always used.</span></td></tr>
+          <tr><th scope="row">Postcode</th><td>The share of non-citizens living in the claimant's postcode.</td></tr>
+          <tr><th scope="row">Citizenship</th><td>Whether the claimant is a citizen.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted small">Loosely modeled on the Dutch childcare-benefits case from lecture. All claims are simulated by this page.</p>
+
+    <div class="lab" id="lab2">
+      <div class="lab2-ctrl">
+        <p class="ctrl-l" style="margin:0 0 .4rem">Inputs the model may use</p>
+        <label class="check-inline muted"><input type="checkbox" checked disabled> Income irregularity</label>
+        <label class="check-inline muted"><input type="checkbox" checked disabled> Earlier corrections</label>
+        <label class="check-inline"><input type="checkbox" id="use-area"> Postcode</label>
+        <label class="check-inline"><input type="checkbox" id="use-noncit"> Citizenship</label>
+        <div class="btn-row">
+          <button type="button" class="btn" id="train2">Train the model</button>
+          <span class="small muted" id="train2-status" aria-live="polite">Network: 1 hidden layer of 6 neurons, 300 epochs.</span>
+        </div>
+      </div>
+
+      <div id="res2" class="res2" hidden>
+        <p class="res-h">What the agency can see: its own records</p>
+        <div class="table-scroll">
+          <table class="metrics">
+            <thead><tr><th></th><th>All claims</th><th>Citizens</th><th>Non-citizens</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Share of claims flagged</th><td id="m-flag-all"></td><td id="m-flag-c"></td><td id="m-flag-n"></td></tr>
+              <tr><th scope="row">Flagged claims that the records call fraud</th><td id="m-rec-all"></td><td id="m-rec-c"></td><td id="m-rec-n"></td></tr>
+              <tr><th scope="row">Test loss on the records</th><td id="m-loss"></td><td class="muted">–</td><td class="muted">–</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="truth-box">
+          <div class="truth-head">
+            <p class="res-h" style="margin:0">What only a simulation can see: the truth</p>
+            <button type="button" class="btn secondary" id="truth-btn" aria-expanded="false">Show the truth</button>
+          </div>
+          <div id="truth" hidden>
+            <p class="small">This page made up the claims, so it knows which ones really were fraud. In the simulation, real fraud depends only on income irregularity and earlier corrections, the same way for everyone. But past investigators checked non-citizens' claims far more often, so the records find more of their fraud, and a few honest non-citizens were wrongly recorded as fraud.</p>
+            <div class="table-scroll">
+              <table class="metrics">
+                <thead><tr><th></th><th>All claims</th><th>Citizens</th><th>Non-citizens</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Flagged claims that really were fraud</th><td id="m-true-all"></td><td id="m-true-c"></td><td id="m-true-n"></td></tr>
+                  <tr class="hl"><th scope="row">Honest claimants who were flagged</th><td id="m-fp-all"></td><td id="m-fp-c"></td><td id="m-fp-n"></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="lab-record">
+          <button type="button" class="btn" id="record2">Record this run</button>
+          <span class="small muted">Records the inputs and every number above, including the truth.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="runs" id="runs2">
+        <thead><tr><th>#</th><th>Inputs</th><th>Flagged: cit. / non-cit.</th><th>Records call fraud</th><th>Test loss</th><th class="t">Really fraud</th><th class="t">Honest flagged: cit. / non-cit.</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">2A · Judge it by the records</p>
+        <p>Train and <b>record three models</b>: (1) neither box checked, (2) postcode only, (3) postcode and citizenship. Don't open the truth yet. Judged only by what the agency can see, which model looks best? Are the differences between them large?</p>
+        <textarea data-q="q2a" aria-label="Answer to 2A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">2B · Judge it by the truth</p>
+        <p>Now press <b>Show the truth</b>. Look at <em>honest claimants who were flagged</em> in each group, across your three models. What happened when you dropped citizenship but kept postcode? Why?</p>
+        <textarea data-q="q2b" aria-label="Answer to 2B"></textarea>
+      </li>
+      <li>
+        <p class="task-h">2C · No truth button</p>
+        <p>A real agency never gets a "Show the truth" button. Name one thing it could do to find out whether its model treats groups unfairly.</p>
+        <textarea data-q="q2c" aria-label="Answer to 2C"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 3 ============ -->
+  <section id="part3">
+    <h2>Part 3 · Back to Wednesday's question</h2>
+    <div class="callout">
+      <p class="eyebrow" style="margin-bottom:.3rem">Today's question</p>
+      <p style="font-family:var(--font-heading);font-size:1.35rem;margin:0">Is a model that predicts well good enough to use in policymaking?</p>
+    </div>
+    <p>Answer in <b>3 to 5 sentences</b>, in your own words. Use at least one thing you saw today (in Part 1 or Part 2), and say what "predicts well" was measured against.</p>
+    <textarea data-q="q3" class="tall" aria-label="Answer to Part 3"></textarea>
+  </section>
+
+  <!-- ============ SUBMIT ============ -->
+  <section id="submit">
+    <h2>Submit before you leave</h2>
+    <div class="callout">
+      <ul class="checklist" id="checklist"></ul>
+    </div>
+    <ol>
+      <li>Press <b>Download my submission</b>. You get a text file with your name, recorded runs and answers.</li>
+      <li>On Canvas, open <b>Section 2 lab</b> and upload the file. (Or press <b>Copy</b> and paste it into the text box.)</li>
+      <li>Do this before section ends. Missing items? Submit what you have; see <a href="assignment.html">the assignment page</a>.</li>
+    </ol>
+    <div class="btn-row">
+      <button type="button" class="btn" id="download">Download my submission</button>
+      <button type="button" class="btn secondary" id="copy-sub">Copy</button>
+    </div>
+    <div class="prompt" style="margin-top:1rem">
+      <div class="bar"><span>Preview</span></div>
+      <pre id="preview"></pre>
+    </div>
+  </section>
+
+  <!-- ============ GOING FURTHER ============ -->
+  <section id="further">
+    <h2>Going further <span class="muted" style="font-size:1rem;font-family:var(--font-body)">(optional, not graded)</span></h2>
+    <p>The whole neural network on this page is about 100 lines of plain JavaScript, in <a href="nn.js"><code>nn.js</code></a>. Save it into a folder, open that folder in your coding agent, and ask:</p>
+    <div class="prompt">
+      <div class="bar"><span>Ask your agent</span><button type="button" class="copy" data-copy="further-prompt">Copy</button></div>
+      <pre id="further-prompt">This folder has nn.js, a small neural network used in my political science section. I'm not a programmer. Walk me through the step() function in plain language: where is the error measured, where does "change every weight a little" happen, and what does the learning rate do? Point to line numbers. Don't change the file.</pre>
+    </div>
+    <p class="small muted">Remember last week's rule: the agent's explanation is a claim, not proof. If something sounds off, ask it to show you the line.</p>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="glossary">
+    <h2>Words you'll need</h2>
+    <dl class="gloss">
+      <dt>Training data</dt><dd>The examples the model learns from.</dd>
+      <dt>Test data</dt><dd>Examples held back to check the model on cases it has never seen.</dd>
+      <dt>Label</dt><dd>The answer attached to an example (passed / failed, fraud / not fraud). Someone, or some process, produced it.</dd>
+      <dt>Loss</dt><dd>The model's error, as one number. Lower is better. Here: cross-entropy, which punishes confident wrong answers hardest.</dd>
+      <dt>Accuracy</dt><dd>The share of examples the model gets right.</dd>
+      <dt>Weight</dt><dd>A number inside the network that it adjusts while learning.</dd>
+      <dt>Epoch</dt><dd>One pass through all the training examples.</dd>
+      <dt>Overfitting</dt><dd>Fitting the training data so closely, noise included, that the model does worse on new data.</dd>
+      <dt>Proxy</dt><dd>An input that stands in for another one, like postcode standing in for citizenship.</dd>
+    </dl>
+  </section>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section 2 lab. All data on this page are simulated. Part 1 follows the spirit of the TensorFlow Playground (Smilkov and Carter) from lecture; Part 2 is loosely based on Amnesty International (2021), <i>Xenophobic Machines</i>.</p>
+    <p>Your name and answers are stored only in this browser (nothing is sent anywhere). AI-use note: drafted with Claude Code (Claude Opus 5.5) and reviewed by the teaching team. <button type="button" class="linkbtn" id="reset-all">Clear my answers on this page</button></p>
+  </footer>
+</main>
+
+<script src="nn.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

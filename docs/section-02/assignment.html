@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section Assignment 2 · Train a neural network, then question it · POLISCI 158</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; font-size: .95rem; margin: .5rem 0 0; }
+  .meta b { font-weight: 600; }
+  @media print { .btn-row { display: none; } h2 { margin-top: 1.4rem; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">POLISCI 158 · Section 2</a>
+    <nav aria-label="Page links">
+      <a href="index.html">← Lab page</a>
+      <a href="index.html#submit">Submit</a>
+      <a href="../index.html">All sections</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero" style="padding-bottom:0">
+    <p class="eyebrow">Section Assignment 2</p>
+    <h1>Train a neural network, then question it</h1>
+    <div class="meta">
+      <span><b>Graded:</b> Pass / No-Pass</span>
+      <span><b>Due:</b> at the end of your Section 2 meeting</span>
+      <span><b>Submit:</b> one file (or pasted text) on Canvas</span>
+    </div>
+    <div class="btn-row">
+      <a class="btn" href="index.html">Open the lab</a>
+      <button type="button" class="btn secondary" onclick="window.print()">Print</button>
+    </div>
+  </section>
+
+  <h2>Why this assignment</h2>
+  <p>In Session 3 you saw how machines learn from examples, why models overfit, and three cases where prediction went into policy. Today you try both sides yourself. First you train a small neural network. Then you check a model the way an auditor would, asking what "predicts well" was measured against.</p>
+
+  <h2>What to do</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Part</th><th>Time</th><th>What you do</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">1 · Bills</th><td>~12 min</td><td>Train a neural network to predict which bills get out of committee. Find the smallest network that reaches 88% test accuracy, then watch a big network overfit a small, messy sample. Record at least 3 runs and answer 1A–1C.</td></tr>
+      <tr><th scope="row">2 · Benefit claims</th><td>~12 min</td><td>Train a model that flags 10% of benefit claims for fraud checks, with and without postcode and citizenship as inputs. Judge it first by the agency's records, then by the truth. Record at least 3 runs and answer 2A–2C.</td></tr>
+      <tr><th scope="row">3 · Reflection</th><td>~4 min</td><td>In 3–5 sentences: <em>Is a model that predicts well good enough to use in policymaking?</em> Use one thing you saw today.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted small">All data on the lab page are simulated.</p>
+
+  <h2>To pass</h2>
+  <ul>
+    <li>The file has your name, <b>at least 3 recorded runs in Part 1</b> and <b>at least 3 in Part 2</b>.</li>
+    <li>All seven questions (1A–1C, 2A–2C, Part 3) have a real attempt. Short is fine; blank is not.</li>
+    <li>The answers are in your own words. You may work in pairs and discuss, but each person writes and submits their own answers.</li>
+  </ul>
+  <p>Wrong answers don't fail. This is graded on a real attempt, not on getting the "right" numbers.</p>
+
+  <h2>How to submit</h2>
+  <ol>
+    <li>At the bottom of the lab page, press <b>Download my submission</b>.</li>
+    <li>On Canvas, open <b>Section 2 lab</b> and upload the file. Or press <b>Copy</b> and paste the text into the text box.</li>
+    <li>Submit before you leave section.</li>
+  </ol>
+
+  <h2>If you can't finish in section</h2>
+  <p>Submit what you have before you leave. You may then resubmit a complete version by 11:59 pm the same day. If you missed section, contact your TA.</p>
+
+  <h2>Privacy</h2>
+  <p>Your name and answers are stored only in your browser until you download them. The page doesn't send anything anywhere.</p>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section Assignment 2.</p>
+  </footer>
+</main>
+</body>
+</html>

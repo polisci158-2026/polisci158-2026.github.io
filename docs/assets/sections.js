@@ -34,7 +34,22 @@ window.SECTIONS = [
   },
 
   /* ---- Placeholders: replace title/summary/links and set status to "published" when ready ---- */
-  { num: 2, status: "upcoming", title: "To be announced", summary: "", links: [] },
+  {
+    num: 2,
+    status: "published",
+    title: "Train a neural network, then question it",
+    summary: "Train a small neural network in your browser, watch it overfit, then test a fraud-flagging model the way an auditor would.",
+    links: [
+      { label: "Lab", href: "section-02/index.html", primary: true },
+      { label: "Assignment", href: "section-02/assignment.html" }
+    ],
+    assignment: {
+      title: "Train a neural network, then question it",
+      grading: "Pass / No-Pass",
+      due: "End of your Section 2 meeting (see Canvas)",
+      href: "section-02/assignment.html"
+    }
+  },
   { num: 3, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 4, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 5, status: "upcoming", title: "To be announced", summary: "", links: [] },
