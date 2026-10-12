@@ -50,7 +50,22 @@ window.SECTIONS = [
       href: "section-02/assignment.html"
     }
   },
-  { num: 3, status: "upcoming", title: "To be announced", summary: "", links: [] },
+  {
+    num: 3,
+    status: "published",
+    title: "From an empty folder to a figure",
+    summary: "Start with an empty folder and a research question, and finish with real data and a first figure by talking it through with your coding agent.",
+    links: [
+      { label: "Workshop guide", href: "section-03/index.html", primary: true },
+      { label: "Assignment", href: "section-03/assignment.html" }
+    ],
+    assignment: {
+      title: "Reproduce a figure with your agent",
+      grading: "Pass / No-Pass",
+      due: "Before Section 4 (see Canvas)",
+      href: "section-03/assignment.html"
+    }
+  },
   { num: 4, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 5, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 6, status: "upcoming", title: "To be announced", summary: "", links: [] },
