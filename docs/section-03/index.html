@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body data-route="claude">
 
@@ -45,7 +45,7 @@
           <button type="button" data-route-btn="claude" aria-pressed="true">Claude Code</button>
           <button type="button" data-route-btn="codex" aria-pressed="false">Codex</button>
         </div>
-        <p class="hint">File names below switch to match your tool.</p>
+        <p class="hint">Wording below switches to match your tool.</p>
       </div>
     </div>
 
@@ -121,7 +121,7 @@
           <summary><span class="num">0</span><span class="title">Set up<small>An empty folder, nothing else</small></span></summary>
           <div class="body">
             <ol>
-              <li>In GitHub Desktop: <strong>File → New repository…</strong>. Name it <code>ps158-wealth-lab</code> and create it.</li>
+              <li>In GitHub Desktop: <strong>File → New repository…</strong>. Name it <code>ps158-reproduce</code> and create it.</li>
               <li>Open that folder in <span data-only="claude">the Claude app's <strong>Code</strong> tab (<strong>Local → Select folder</strong>)</span><span data-only="codex">Codex (open the folder and choose <strong>Local</strong>)</span>.</li>
             </ol>
             <p class="muted small">No template, no starter code. Everything in this folder will come out of your conversation.</p>
@@ -242,16 +242,15 @@
 
       <li class="step" data-step="6">
         <details>
-          <summary><span class="num">6</span><span class="title">README, save, commit<small>The agent drafts, you review</small></span></summary>
+          <summary><span class="num">6</span><span class="title">README and commit<small>A repository someone else can rerun</small></span></summary>
           <div class="body">
             <p><strong>Goal:</strong> a repository someone else could rerun and understand.</p>
             <ul>
-              <li><strong>Save what worked:</strong> ask the agent to write a short <span class="u-instr">CLAUDE.md</span> with the rules you followed, and to turn today's process into a reusable skill in <span class="u-skilldir">.claude/skills</span>/. Read both, and edit any rule you don't actually want.</li>
               <li><strong>Have the agent write a short README</strong>: which figure, where the data come from, and anything else worth noting. Read it before you commit.</li>
               <li><strong>Commit and push</strong> in GitHub Desktop.</li>
             </ul>
             <details class="more"><summary>Example message, if you're stuck</summary>
-              <div class="prompt"><div class="bar"><span>Save it</span><button type="button" class="copy">Copy</button></div><pre>Write a short <span class="u-instr">CLAUDE.md</span> for this project with the rules we've followed. Then turn what we did today into a reusable skill called data-to-figure, saved in <span class="u-skilldir">.claude/skills</span>/data-to-figure/SKILL.md.</pre></div>
+              <div class="prompt"><div class="bar"><span>README</span><button type="button" class="copy">Copy</button></div><pre>Write a short README.md for this project: which figure we made, where the data come from, and how to rerun the scripts.</pre></div>
             </details>
             <button type="button" class="done-toggle" data-done="6" aria-pressed="false">Mark step done</button>
           </div>
@@ -268,7 +267,7 @@
       <li><strong>Option A:</strong> any figure from a POLISCI 158 session, politics or tech track (slides and handouts are on the <a href="https://simonepaciphd.github.io/polisci158-ai-politics/" target="_blank" rel="noopener">course website</a>). Its data must be public: the figure's source line tells you where the numbers come from.</li>
       <li><strong>Option B:</strong> today's demo figure, wealth by parents' education, following the lab.</li>
     </ul>
-    <p>Submit one link to a repository with <code>get_data.py</code>, <code>plot.py</code>, your reproduced figure, and a short <code>README.md</code> saying which figure and where the data come from (your agent can write it). <a href="assignment.html">What exactly to submit</a>.</p>
+    <p>Submit one link to a repository, <code>ps158-reproduce</code>, with <code>get_data.py</code>, <code>plot.py</code>, your reproduced figure, and a short <code>README.md</code> saying which figure and where the data come from (your agent can write it). <a href="assignment.html">What exactly to submit</a>.</p>
     <div class="warn"><strong>Data, not pixels.</strong> The numbers must come from the original data source, by a script. Reading values off the picture is tracing, not reproducing.</div>
     <div class="callout">
       <h3>Bonus (optional): extend it</h3>
