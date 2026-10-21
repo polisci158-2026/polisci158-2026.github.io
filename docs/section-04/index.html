@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 4 · How a chatbot guesses public opinion · POLISCI 158</title>
+<meta name="description" content="POLISCI 158 Section 4 lab: compare a counting model with a tiny transformer and look at its attention, play a grading game that shows why models guess, and test a chatbot's simulated survey against Pew's poll on AI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">POLISCI 158 · Section 4</a>
+    <nav aria-label="Page sections">
+      <a href="#recap">Recap</a>
+      <a href="#part1">Part 1</a>
+      <a href="#part2">Part 2</a>
+      <a href="#part3">Part 3</a>
+      <a href="#part4">Part 4</a>
+      <a href="#submit">Submit</a>
+      <a href="assignment.html">Assignment</a>
+      <a href="../index.html">All sections</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <p class="eyebrow">Week 5 · Section 4 · Lab</p>
+    <h1>How a chatbot guesses public opinion</h1>
+    <p class="lede">In June 2026, Pew asked 3,488 Americans whether the growing use of AI makes them more excited or more concerned. Today you'll look inside the kind of model a chatbot is built on, see why it guesses when it doesn't know, and then test whether a chatbot can tell you what those 3,488 people said.</p>
+
+    <div class="controls" aria-label="Your details">
+      <div>
+        <label for="s-name">Your name</label>
+        <input id="s-name" type="text" autocomplete="name" spellcheck="false" placeholder="e.g. Jordan Rivera">
+        <p class="hint">Goes on your submission. Stored only in this browser.</p>
+      </div>
+      <div>
+        <label for="s-partner">Partner's name <span class="muted" style="font-weight:400">(optional)</span></label>
+        <input id="s-partner" type="text" autocomplete="off" spellcheck="false" placeholder="if you worked in a pair">
+        <p class="hint">Pairs can share a laptop, but each person submits their own answers.</p>
+      </div>
+    </div>
+
+    <div class="progress" aria-live="polite">
+      <div class="bar" aria-hidden="true"><span id="progress-fill"></span></div>
+      <span id="progress-text">0 of 14 items done</span>
+    </div>
+
+    <ul class="outcomes four">
+      <li><strong>Part 1 · 8 min</strong>A counting model vs. a tiny transformer, trained on the same survey answers. Watch attention at work.</li>
+      <li><strong>Part 2 · 4 min</strong>A grading game: when should a model answer, and when should it say "I don't know"?</li>
+      <li><strong>Part 3 · 9 min</strong>Have a chatbot invent survey respondents, then check it against Pew's real poll.</li>
+      <li><strong>Part 4 · 3 min</strong>Advise a campaign that wants to swap its poll for a chatbot.</li>
+    </ul>
+  </section>
+
+  <!-- ============ RECAP ============ -->
+  <section id="recap">
+    <h2>Recap: how a language model writes</h2>
+    <p class="muted">The ideas from Session 7 you'll use today, with more detail on what happens inside the model. Your TA will go over them at the start of section; come back here if you need a reminder.</p>
+
+    <h3>1 · From text to next-token chances</h3>
+    <div class="compare-flow">
+      <div><span class="where">Pre-training</span><span class="pill">Huge amounts of text</span> → <span class="pill">guess the next token, trillions of times; adjust the weights after each guess</span> → <span class="pill out">a base model: a text predictor</span></div>
+      <div><span class="where">Post-training</span><span class="pill">example conversations, people's rankings</span> → <span class="pill out">a chatbot</span></div>
+    </div>
+    <p>A <strong>token</strong> is a word or a piece of a word. Given the text so far, the model gives <strong>every token in its vocabulary a chance</strong> of coming next ("The sky is" → blue 38%, clear 20%, …). It picks one, adds it to the text, and repeats. <strong>Temperature</strong> sets how adventurous the pick is.</p>
+
+    <h3>2 · Inside a transformer</h3>
+    <div class="tf-stack" aria-label="Diagram of a transformer">
+      <div class="tf-row"><span class="tf-tag">Input</span><span class="tf-tokens"><span>i</span><span>am</span><span>worried</span><span>that</span><span>ai</span><span>will</span></span></div>
+      <div class="tf-row"><span class="tf-tag">1 · Embed</span><span>Each token becomes a list of numbers (a <b>vector</b>), plus a signal for its <b>position</b>. Words used in similar ways get similar vectors.</span></div>
+      <div class="tf-row tf-repeat"><span class="tf-tag">2 · Attention</span><span>Each token looks back at the tokens before it and pulls in information from the ones that matter for it.</span></div>
+      <div class="tf-row tf-repeat"><span class="tf-tag">3 · Feed-forward</span><span>Each token's vector goes through a small neural network on its own: where much of what the model "knows" is stored.</span></div>
+      <div class="tf-row tf-note"><span class="tf-tag"></span><span>Steps 2–3 make one <b>layer</b>. Stack many layers: 2 in today's tiny model, 96 in GPT-3.</span></div>
+      <div class="tf-row"><span class="tf-tag">4 · Predict</span><span>The <b>last</b> token's final vector is compared with every word in the vocabulary → a score for each → <b>softmax</b> turns scores into chances that add up to 100%.</span></div>
+    </div>
+    <p class="small muted">During training, every position predicts its own next token at the same time. Processing the whole text in parallel, instead of one word after another, is a big reason transformers (Vaswani et al., 2017) could be trained at scale.</p>
+
+    <h3>3 · Attention, step by step</h3>
+    <p>Before attention, the vector for "will" is the same in every sentence. Attention lets it take in its context. Each token makes three vectors from its own numbers:</p>
+    <div class="qkv">
+      <div><b>Query</b>"What am I looking for?"</div>
+      <div><b>Key</b>"What do I contain?"</div>
+      <div><b>Value</b>"What I pass on if you pick me."</div>
+    </div>
+    <ol>
+      <li>Compare the last token's <b>query</b> with every earlier token's <b>key</b> (a dot product): a score for each.</li>
+      <li><b>Softmax</b> the scores into <b>attention weights</b> that add up to 1. A token can only look <em>back</em>, never ahead.</li>
+      <li>Add up the earlier tokens' <b>values</b>, each multiplied by its weight. That mix updates the token's vector.</li>
+    </ol>
+    <div class="callout small">
+      <p class="res-h" style="margin:0 0 .4rem">A real example from today's tiny transformer (layer 2, head 2)</p>
+      <div class="att-demo" id="att-demo"></div>
+      <p style="margin:.5rem 0 0">From "will", almost all the attention goes to "worried". That's how the model "knows" the next word should be <em>take</em>, not <em>help</em>. Each layer has several <b>heads</b>, each with its own queries and keys, so different heads can look for different things.</p>
+    </div>
+    <p><strong>Why it matters, and what it costs.</strong> A model that counts word pairs sees only the last word or two; attention can use anything in the <strong>context window</strong>. But every token is compared with every earlier token, so the work grows with the <em>square</em> of the text length. And taking text in is not the same as using it well: in one test, GPT-3.5 answered correctly 76% of the time when the document with the answer came first, but 54% when it sat in the middle (Liu et al., 2024).</p>
+
+    <h3>4 · Scale</h3>
+    <p>Ten times more computing, model size or training text cut the prediction error by about 11%, 16% and 20% (Kaplan et al., 2020), steadily enough to forecast GPT-4's error from much smaller models. But scale fixes some errors and not others.</p>
+
+    <h3>5 · Why models hallucinate</h3>
+    <p><strong>Where it comes from.</strong> Pre-training shows the model only fluent text, with no examples marked "false". Patterns that repeat, like spelling or matching parentheses, get learned, and those errors fade with scale. But an <strong>arbitrary, rarely written fact</strong> (someone's birthday, a dissertation title, one subgroup's number in one poll) can't be predicted from patterns. The model still produces the most likely-<em>sounding</em> answer.</p>
+    <p class="muted small">Try it: which errors should fade as models get bigger?</p>
+    <div class="sorter" id="sorter">
+      <div class="scenario" data-answer="pattern">
+        <span>Misspelling "government"</span>
+        <span class="choices"><button type="button" data-pick="pattern">Fades with scale</button><button type="button" data-pick="fact">Arbitrary fact</button></span>
+        <p class="feedback">Spelling follows patterns seen millions of times. These errors disappear with scale.</p>
+      </div>
+      <div class="scenario" data-answer="fact">
+        <span>The birthday of a county election official</span>
+        <span class="choices"><button type="button" data-pick="pattern">Fades with scale</button><button type="button" data-pick="fact">Arbitrary fact</button></span>
+        <p class="feedback">Arbitrary and rarely written down. No pattern predicts it, so a model that answers anyway is guessing.</p>
+      </div>
+      <div class="scenario" data-answer="pattern">
+        <span>"The senators <i>votes</i> against the bill"</span>
+        <span class="choices"><button type="button" data-pick="pattern">Fades with scale</button><button type="button" data-pick="fact">Arbitrary fact</button></span>
+        <p class="feedback">Grammar is a regular pattern. Large models almost never make this mistake.</p>
+      </div>
+      <div class="scenario" data-answer="fact">
+        <span>The share of Republicans "more concerned than excited" about AI in June 2026</span>
+        <span class="choices"><button type="button" data-pick="pattern">Fades with scale</button><button type="button" data-pick="fact">Arbitrary fact</button></span>
+        <p class="feedback">One number, from one poll, possibly after the model's training text was collected. You'll test this in Part 3.</p>
+      </div>
+    </div>
+    <p style="margin-top:1rem"><strong>Why it persists: grading rewards guessing.</strong> Most tests score a right answer 1, and both a wrong answer and "I don't know" 0. Then guessing never scores less than admitting uncertainty: a guessed birthday has a 1-in-365 chance; "I don't know" has none. Leaderboards that rank models by accuracy alone reward models that guess (OpenAI, 2025; Kalai et al., 2025). Part 2 lets you play that game.</p>
+    <div class="table-scroll">
+      <table class="metrics" style="max-width:34rem">
+        <thead><tr><th>SimpleQA (short factual questions)</th><th>gpt-5-thinking-mini</th><th>OpenAI o4-mini</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">"I don't know"</th><td>52%</td><td>1%</td></tr>
+          <tr><th scope="row">Right</th><td>22%</td><td><b>24%</b></td></tr>
+          <tr class="hl"><th scope="row">Wrong</th><td>26%</td><td>75%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">Source: OpenAI (2025), "Why language models hallucinate," from the GPT-5 system card. By accuracy, o4-mini wins.</p>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section id="part1">
+    <h2>Part 1 · A counting model vs. a tiny transformer</h2>
+    <p>Imagine a survey asked 10,000 Americans: <em>"In your own words, why do you feel the way you do about AI?"</em> This page made up those answers (they're simulated), and two models learned from them:</p>
+    <ul>
+      <li><strong>The counting model</strong> counts which word followed the last one or two words. No vectors, no attention.</li>
+      <li><strong>The tiny transformer</strong>: 2 layers, 2 attention heads per layer, 32 numbers per token, about 37,000 weights, trained by next-token prediction. Same design as a real LLM, millions of times smaller.</li>
+    </ul>
+    <details class="callout small" style="padding:.6rem 1rem">
+      <summary style="cursor:pointer;font-weight:600">See five of the training answers</summary>
+      <ol id="samples" class="small" style="margin:.6rem 0 0"></ol>
+    </details>
+
+    <div class="lab" id="lab1">
+      <label for="lm-text" class="ctrl-l" style="display:block;margin-bottom:.35rem">Text so far (both models read the same text)</label>
+      <textarea id="lm-text" spellcheck="false" style="min-height:3.6rem"></textarea>
+      <div class="chips" aria-label="Starting text">
+        <button type="button" class="chip" data-start="i am worried that ai will">i am worried that ai will</button>
+        <button type="button" class="chip" data-start="i am excited that ai will">i am excited that ai will</button>
+        <button type="button" class="chip" data-start="a recent poll found that">a recent poll found that</button>
+        <button type="button" class="chip" data-start="my kids use it for homework and">my kids use it for homework and</button>
+      </div>
+      <div class="ctrl-row" style="border:0">
+        <span class="ctrl-l" id="temp-label">Temperature (for writing)</span>
+        <div class="segmented" role="group" aria-labelledby="temp-label">
+          <button type="button" data-temp="0.3" aria-pressed="false">0.3 careful</button>
+          <button type="button" data-temp="0.8" aria-pressed="true">0.8</button>
+          <button type="button" data-temp="1.5" aria-pressed="false">1.5 wild</button>
+        </div>
+      </div>
+
+      <div class="two-models">
+        <div class="model-card">
+          <p class="model-h">Counting model</p>
+          <div class="ctrl-row">
+            <span class="ctrl-l" id="size-label">Training text</span>
+            <div class="segmented" role="group" aria-labelledby="size-label">
+              <button type="button" data-size="100" aria-pressed="false">100</button>
+              <button type="button" data-size="1000" aria-pressed="false">1,000</button>
+              <button type="button" data-size="10000" aria-pressed="true">10,000 answers</button>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-l" id="ctx-label">Looks at</span>
+            <div class="segmented" role="group" aria-labelledby="ctx-label">
+              <button type="button" data-ctx="1" aria-pressed="false">last 1 word</button>
+              <button type="button" data-ctx="2" aria-pressed="true">last 2 words</button>
+            </div>
+          </div>
+          <p class="res-h" id="next-h-c">Chances for the next word</p>
+          <div id="bars-c" class="bars" aria-live="polite"></div>
+          <dl class="stats"><dt>Prediction error on 1,000 new answers</dt><dd id="st-err-c" class="em">–</dd></dl>
+          <div class="btn-row"><button type="button" class="btn secondary" data-write="c">Write with this model</button></div>
+        </div>
+
+        <div class="model-card tf">
+          <p class="model-h">Tiny transformer <span class="muted small">(trained on 10,000 answers)</span></p>
+          <div class="ctrl-row">
+            <span class="ctrl-l" id="head-label">Attention to show</span>
+            <div class="segmented" role="group" aria-labelledby="head-label">
+              <button type="button" data-head="0,0" aria-pressed="false">L1 H1</button>
+              <button type="button" data-head="0,1" aria-pressed="false">L1 H2</button>
+              <button type="button" data-head="1,0" aria-pressed="false">L2 H1</button>
+              <button type="button" data-head="1,1" aria-pressed="true">L2 H2</button>
+            </div>
+          </div>
+          <p class="res-h">Where the last word looks <span id="att-last" class="muted"></span></p>
+          <div id="att" class="att-strip" aria-live="polite"></div>
+          <p class="res-h" style="margin-top:.6rem">Chances for the next word</p>
+          <div id="bars-t" class="bars" aria-live="polite"></div>
+          <dl class="stats"><dt>Prediction error on 1,000 new answers</dt><dd id="st-err-t" class="em">–</dd></dl>
+          <div class="btn-row"><button type="button" class="btn secondary" data-write="t">Write with this model</button></div>
+        </div>
+      </div>
+      <p class="small muted" id="lm-status" aria-live="polite" style="margin:.5rem 0 0">Prediction error is each model's average surprise at the next word in answers it never saw, in bits. Lower is better.</p>
+
+      <div class="lab-record">
+        <button type="button" class="btn" id="record1">Record this run</button>
+        <span class="small muted">Records the text, both models' top words, the attention shown, and both errors.</span>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="runs" id="runs1">
+        <thead><tr><th>#</th><th>Text</th><th>Counting model</th><th>Error</th><th>Transformer</th><th>Attention from last word</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">1A · Same last words, different meaning</p>
+        <p>Click <b>"i am worried that ai will"</b> and record it; then <b>"i am excited that ai will"</b> and record it. Why does the counting model (last 2 words) give the same chances both times? In the transformer, look at <b>L2 H2</b>: which earlier word does "will" attend to, and how does that change the prediction? Look at one other head too: does it attend to the same thing?</p>
+        <textarea data-q="q1a" aria-label="Answer to 1A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">1B · More text or a better design?</p>
+        <p>Switch the counting model between <b>100</b>, <b>1,000</b> and <b>10,000</b> answers (last 2 words) and note its prediction error each time. Compare with the transformer, trained on 10,000. How much did each tenfold increase in text buy? How much did attention buy on top of that?</p>
+        <textarea data-q="q1b" aria-label="Answer to 1B"></textarea>
+      </li>
+      <li>
+        <p class="task-h">1C · The number neither model can know</p>
+        <p>Click <b>"a recent poll found that"</b>, record it, and press <b>Write with this model</b> a few times for each model. What chances do the two models give the next word? Did attention help here? Using the "arbitrary fact" idea from the recap, explain why not, and what a model does anyway.</p>
+        <textarea data-q="q1c" aria-label="Answer to 1C"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section id="part2">
+    <h2>Part 2 · The guessing game</h2>
+    <p>A model gets 200 short factual questions about polls on AI, like <em>"What share of adults under 30 said they use a chatbot weekly in March 2026?"</em> For each one it has a <strong>confidence</strong>: its chance of being right if it answers. (Here the model is honest about that: when it is 70% sure, it is right 70% of the time.) You choose its rule: <strong>answer only when at least this confident</strong>; otherwise say "I don't know".</p>
+
+    <div class="lab" id="lab2">
+      <div class="ctrl-row" style="border:0">
+        <label class="ctrl-l" for="thresh">Answer when at least <output id="thresh-out">0%</output> confident</label>
+        <input type="range" id="thresh" min="0" max="95" step="5" value="0" style="flex:1;min-width:12rem">
+      </div>
+      <div class="quiz-grid" id="quiz-grid" aria-label="The 200 questions, from most to least confident"></div>
+      <p class="small muted" style="margin:.3rem 0 0"><span class="qk qk-r"></span> right <span class="qk qk-w"></span> wrong <span class="qk qk-a"></span> "I don't know" · questions sorted from most to least confident</p>
+
+      <div class="score-grid">
+        <div class="score"><p class="res-h">Answers</p><dl class="stats"><dt>"I don't know"</dt><dd id="g-abst">–</dd><dt>Right</dt><dd id="g-right">–</dd><dt>Wrong (hallucinations)</dt><dd id="g-wrong">–</dd></dl></div>
+        <div class="score"><p class="res-h">Accuracy-only scoreboard</p><p class="sc-rule">right +1 · wrong 0 · "I don't know" 0</p><p class="sc-big" id="g-s0">–</p></div>
+        <div class="score"><p class="res-h">Penalty scoreboard</p>
+          <p class="sc-rule">right +1 · wrong
+            <span class="segmented small-seg" role="group" aria-label="Points lost for a wrong answer"><button type="button" data-pen="1" aria-pressed="true">−1</button><button type="button" data-pen="3" aria-pressed="false">−3</button></span>
+            · "I don't know" 0</p>
+          <p class="sc-big" id="g-s1">–</p></div>
+      </div>
+      <div class="lab-record">
+        <button type="button" class="btn" id="record2">Record this setting</button>
+        <span class="small muted">Record at least 3 settings: try to find the best rule for each scoreboard.</span>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="runs" id="runs2">
+        <thead><tr><th>#</th><th>Answer when ≥</th><th>"I don't know"</th><th>Right</th><th>Wrong</th><th>Accuracy score</th><th>Penalty score</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">2A · Find the best rule</p>
+        <p>Which setting gets the highest <b>accuracy-only</b> score, and how many wrong answers does it give? Which setting gets the highest <b>penalty</b> score with −1 for a wrong answer? With −3? Can you explain those cutoffs? (Hint: compare what a guess is worth on average with what "I don't know" is worth.)</p>
+        <textarea data-q="q2a" aria-label="Answer to 2A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">2B · Leaderboards</p>
+        <p>Find the settings that look most like the two models in the SimpleQA table in the recap. If companies compete on accuracy-only leaderboards, what kind of model will they build? What would you change, and who would have to change it?</p>
+        <textarea data-q="q2b" aria-label="Answer to 2B"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 3 ============ -->
+  <section id="part3">
+    <h2>Part 3 · A silicon sample vs. a real poll</h2>
+    <p>Some researchers and campaigns have asked whether a chatbot could stand in for survey respondents: describe a person, ask the model to answer as that person, repeat. These made-up respondents are called a <strong>silicon sample</strong>. Today's test is the poll from the top of this page:</p>
+    <div class="callout">
+      <p class="eyebrow" style="margin-bottom:.3rem">Pew Research Center · American Trends Panel · 3,488 U.S. adults · June 22–28, 2026</p>
+      <p style="font-family:var(--font-heading);font-size:1.2rem;margin:0">"Overall, would you say the increased use of artificial intelligence (AI) in daily life makes you feel… <b>more excited than concerned</b>, <b>more concerned than excited</b>, or <b>equally concerned and excited</b>?"</p>
+    </div>
+    <p class="warn small"><b>Don't look up the answer.</b> The real numbers are on this page, hidden until step 4.</p>
+
+    <div class="lab" id="lab3">
+      <p class="task-h" style="margin:0 0 .4rem">Step 1 · Your own guess</p>
+      <p class="small" style="margin:0 0 .5rem">What share said <b>more concerned than excited</b>?</p>
+      <div class="guess-grid">
+        <label>All adults <span><input type="number" min="0" max="100" inputmode="numeric" data-guess="all"> %</span></label>
+        <label>Democrats <span><input type="number" min="0" max="100" inputmode="numeric" data-guess="dem"> %</span></label>
+        <label>Republicans <span><input type="number" min="0" max="100" inputmode="numeric" data-guess="rep"> %</span></label>
+      </div>
+      <p class="small muted" style="margin:.4rem 0 0">Democrats and Republicans include independents who lean toward each party.</p>
+
+      <p class="task-h" style="margin:1.4rem 0 .4rem">Step 2 · Have a chatbot invent 40 respondents</p>
+      <p class="small" style="margin:0">Use any chatbot you have (Stanford AI Playground, ChatGPT, Claude, Gemini, …). <b>Open a new chat</b>, paste this, and send it.</p>
+      <div class="prompt">
+        <div class="bar"><span>Prompt A · silicon sample</span><button type="button" class="copy" data-copy="prompt-a">Copy</button></div>
+        <pre id="prompt-a">I'm testing whether a language model can simulate a survey. Invent 40 U.S. adults interviewed in June 2026: 20 Democrats or independents who lean Democratic, and 20 Republicans or independents who lean Republican. Give each a one-line description (age, state, job).
+
+Then answer this survey question as each person would, not as an AI assistant. Each must choose exactly one option:
+"Overall, would you say the increased use of artificial intelligence (AI) in daily life makes you feel more excited than concerned, more concerned than excited, or equally concerned and excited?"
+
+End with a table that counts the answers by party. Don't search the web.</pre>
+      </div>
+      <p class="small" style="margin:.4rem 0 .5rem">Type the counts from its table below. If you have time, <b>open another new chat</b>, send the same prompt, and add that sample too.</p>
+      <div class="sample-form">
+        <div class="field"><label for="bot-name">Chatbot and model</label><input id="bot-name" type="text" spellcheck="false" placeholder="e.g. Stanford AI Playground, GPT-4o"></div>
+        <div class="table-scroll">
+          <table class="count-in">
+            <thead><tr><th></th><th>More concerned</th><th>More excited</th><th>Equally</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Democrats</th><td><input type="number" min="0" max="20" data-cnt="dc" aria-label="Democrats more concerned"></td><td><input type="number" min="0" max="20" data-cnt="de" aria-label="Democrats more excited"></td><td><input type="number" min="0" max="20" data-cnt="dq" aria-label="Democrats equally"></td><td id="tot-d">0</td></tr>
+              <tr><th scope="row">Republicans</th><td><input type="number" min="0" max="20" data-cnt="rc" aria-label="Republicans more concerned"></td><td><input type="number" min="0" max="20" data-cnt="re" aria-label="Republicans more excited"></td><td><input type="number" min="0" max="20" data-cnt="rq" aria-label="Republicans equally"></td><td id="tot-r">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="btn-row" style="margin-top:0">
+          <button type="button" class="btn" id="add-sample">Add this sample</button>
+          <span class="small muted" id="sample-msg" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="runs" id="runs3">
+          <thead><tr><th>#</th><th>Chatbot</th><th>Democrats: concerned / excited / equally</th><th>Republicans: concerned / excited / equally</th><th>All 40: concerned</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <p class="task-h" style="margin:1.4rem 0 .4rem">Step 3 · Ask it for the real number, with a source</p>
+      <p class="small" style="margin:0">In a <b>new chat</b>:</p>
+      <div class="prompt">
+        <div class="bar"><span>Prompt B · citation check</span><button type="button" class="copy" data-copy="prompt-b">Copy</button></div>
+        <pre id="prompt-b">In Pew Research Center's June 2026 survey of U.S. adults, what percentage said the increased use of artificial intelligence in daily life makes them feel more concerned than excited? What were the numbers for Democrats and for Republicans? Give the title of the Pew report and a link to the page where Pew reports it.</pre>
+      </div>
+      <div class="cite-grid">
+        <div class="field"><label for="cite-num">Numbers it gave (all / Dem / Rep)</label><input id="cite-num" type="text" data-a="cite_num" placeholder="e.g. 52 / 55 / 48, or &quot;didn't know&quot;"></div>
+        <div class="field"><label for="cite-web">Did it search the web?</label>
+          <select id="cite-web" data-a="cite_web"><option value="">choose…</option><option>yes</option><option>no</option><option>can't tell</option></select></div>
+        <div class="field" style="grid-column:1/-1"><label for="cite-link">Open its link. What did you find?</label>
+          <select id="cite-link" data-a="cite_link"><option value="">choose…</option>
+            <option>the page exists and shows those numbers</option>
+            <option>the page exists, but the numbers aren't there or are different</option>
+            <option>the link is broken or the page doesn't exist</option>
+            <option>it gave no link</option>
+            <option>it said it didn't know</option>
+          </select></div>
+      </div>
+
+      <div class="truth-box">
+        <div class="truth-head">
+          <p class="res-h" style="margin:0">Step 4 · The real poll</p>
+          <button type="button" class="btn secondary" id="truth-btn" aria-expanded="false">Compare with the real poll</button>
+        </div>
+        <p class="small muted" id="truth-lock" style="margin:.4rem 0 0">Opens once you've entered your guesses and at least one sample.</p>
+        <div id="truth" hidden>
+          <div class="table-scroll">
+            <table class="metrics">
+              <thead><tr><th>More concerned than excited</th><th>All adults</th><th>Democrats</th><th>Republicans</th></tr></thead>
+              <tbody>
+                <tr class="hl"><th scope="row">Pew, June 2026</th><td>52%</td><td>56%</td><td>49%</td></tr>
+                <tr><th scope="row">Your guess</th><td id="cmp-g-all"></td><td id="cmp-g-dem"></td><td id="cmp-g-rep"></td></tr>
+                <tr><th scope="row">Chatbot's silicon sample <span class="muted small" id="cmp-n"></span></th><td id="cmp-s-all"></td><td id="cmp-s-dem"></td><td id="cmp-s-rep"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small" style="margin:.4rem 0">All adults, all three answers: <b>52%</b> more concerned than excited, <b>9%</b> more excited than concerned, <b>37%</b> equally (1% didn't answer). Margin of error: ±1.8 points for all adults.</p>
+          <div class="trend" id="trend"></div>
+          <p class="small muted" style="margin:0">Sources: Pew Research Center, <a href="https://www.pewresearch.org/short-reads/2026/09/16/democrats-are-now-more-worried-than-republicans-about-ai-and-its-impact-on-jobs/" target="_blank" rel="noopener">"Democrats now more worried than Republicans about AI, its impact on jobs"</a> (Sept. 16, 2026) and its <a href="https://www.pewresearch.org/wp-content/uploads/sites/20/2026/09/SR_09.16_26_ai-partisan-views_topline.pdf" target="_blank" rel="noopener">topline</a>; <a href="https://www.pewresearch.org/short-reads/2026/08/18/young-adults-in-the-us-are-increasingly-wary-of-ai-concerned-it-will-take-jobs/" target="_blank" rel="noopener">"Young US adults are increasingly wary of AI"</a> (Aug. 18, 2026). Democrats and Republicans include leaners.</p>
+          <div class="callout" style="margin:.8rem 0 0;background:var(--surface)">
+            <p class="res-h" style="margin:0 0 .3rem">Pew tested silicon samples too</p>
+            <p class="small" style="margin:0">In September 2026, Pew had an AI model answer nearly 300 of its survey questions as "digital twins" of real panelists. The average error was about 12 points, larger for some groups (16 for Republicans). It tended to treat a group's majority view as nearly everyone's view: it estimated that 86% of Democrats see billionaires as bad for the country; the real figure was 45%. Pew's conclusion: AI models "are not an adequate replacement" for polling on topics of broad public importance. <a href="https://www.pewresearch.org/data-labs/2026/09/30/can-ai-stand-in-for-human-survey-takers-not-really/" target="_blank" rel="noopener">Read the study</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">3A · The overall number</p>
+        <p>How close did the chatbot's silicon sample come to the real 52% / 9% / 37%? If you ran two samples, did they agree? What in the way the chatbot writes could make them differ?</p>
+        <textarea data-q="q3a" aria-label="Answer to 3A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">3B · The party gap</p>
+        <p>Which party did the chatbot (and did you) expect to be more concerned? Look at the trend: the answer depends on the year. Where does a model's sense of how groups differ come from, and what was (or wasn't) in its context window?</p>
+        <textarea data-q="q3b" aria-label="Answer to 3B"></textarea>
+      </li>
+      <li>
+        <p class="task-h">3C · Guess or abstain?</p>
+        <p>In Prompt B, did the chatbot answer, search, or say it didn't know? Did its numbers and link check out? Connect what it did to the guessing game in Part 2.</p>
+        <textarea data-q="q3c" aria-label="Answer to 3C"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 4 ============ -->
+  <section id="part4">
+    <h2>Part 4 · Advise the campaign</h2>
+    <div class="callout">
+      <p style="margin:0">A Senate campaign wants to skip its next poll on voters' views of AI and ask a chatbot to simulate 1,000 likely voters instead. It's faster and almost free.</p>
+    </div>
+    <p>In <b>4 to 6 sentences</b>, advise them. Use at least <b>one mechanism</b> from today (attention and training text, the context window, arbitrary facts, or grading that rewards guessing) and <b>one result you produced</b> in Parts 1–3. Is there anything the silicon sample would be good for?</p>
+    <textarea data-q="q4" class="tall" aria-label="Answer to Part 4"></textarea>
+  </section>
+
+  <!-- ============ SUBMIT ============ -->
+  <section id="submit">
+    <h2>Submit before you leave</h2>
+    <div class="callout">
+      <ul class="checklist" id="checklist"></ul>
+    </div>
+    <ol>
+      <li>Press <b>Download my submission</b>. You get a text file with your name, recorded runs, samples and answers.</li>
+      <li>On Canvas, open <b>Section 4 lab</b> and upload the file. (Or press <b>Copy</b> and paste it into the text box.)</li>
+      <li>Do this before section ends. Late submissions and resubmissions are not accepted, so if something is missing, submit what you have.</li>
+    </ol>
+    <div class="btn-row">
+      <button type="button" class="btn" id="download">Download my submission</button>
+      <button type="button" class="btn secondary" id="copy-sub">Copy</button>
+    </div>
+    <div class="prompt" style="margin-top:1rem">
+      <div class="bar"><span>Preview</span></div>
+      <pre id="preview"></pre>
+    </div>
+  </section>
+
+  <!-- ============ GOING FURTHER ============ -->
+  <section id="further">
+    <h2>Going further <span class="muted" style="font-size:1rem;font-family:var(--font-body)">(optional, not graded)</span></h2>
+    <ul>
+      <li><b>A real model's attention.</b> Open the <a href="https://poloclub.github.io/transformer-explainer/" target="_blank" rel="noopener">Transformer Explainer</a> from lecture (GPT-2 small: 12 layers, 12 heads each). Type <i>i am worried that ai will</i>, open the attention view and try different heads. Do any of them look back at "worried"?</li>
+      <li><b>Read the tiny transformer.</b> The whole model runs in about 100 lines of JavaScript, in <a href="transformer.js"><code>transformer.js</code></a>. Save it into a folder, open that folder in your coding agent, and ask it the prompt below.</li>
+      <li><b>Read the argument.</b> OpenAI, <a href="https://openai.com/index/why-language-models-hallucinate/" target="_blank" rel="noopener">"Why language models hallucinate"</a> (2025), and the paper behind it (Kalai, Nachum, Vempala and Zhang, 2025).</li>
+    </ul>
+    <div class="prompt">
+      <div class="bar"><span>Ask your agent</span><button type="button" class="copy" data-copy="further-prompt">Copy</button></div>
+      <pre id="further-prompt">This folder has transformer.js, a tiny transformer used in my political science section. I'm not a programmer. In plain language, walk me through run(): where are the query, key and value vectors made, where are the attention weights computed and why do they add up to 1, what does the feed-forward part do, and how does the last vector become chances for the next word? Point to line numbers. Don't change the file.</pre>
+    </div>
+    <p class="small muted">As in Section 2: the agent's explanation is a claim, not proof. If something sounds off, ask it to show you the line.</p>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="glossary">
+    <h2>Words you'll need</h2>
+    <dl class="gloss">
+      <dt>Token</dt><dd>A word or a piece of a word: the unit a language model reads and writes.</dd>
+      <dt>Embedding</dt><dd>The list of numbers (vector) that stands for a token inside the model.</dd>
+      <dt>Attention</dt><dd>The step where each token compares its query with earlier tokens' keys, turns the scores into weights that add up to 1, and takes in a weighted mix of their values.</dd>
+      <dt>Head</dt><dd>One attention pattern. Each layer has several heads, each free to look for something different.</dd>
+      <dt>Layer</dt><dd>Attention followed by a feed-forward network. Models stack many layers.</dd>
+      <dt>Softmax</dt><dd>Turns a list of scores into chances that are all positive and add up to 1.</dd>
+      <dt>Context window</dt><dd>The text the model can see when it predicts: the whole chat so far, plus anything a search pasted in.</dd>
+      <dt>Temperature</dt><dd>How adventurous the pick is. Low: almost always the top token. High: less likely tokens get picked more often.</dd>
+      <dt>Prediction error</dt><dd>How surprised the model is, on average, by each next word of text it never saw. Lower is better.</dd>
+      <dt>Hallucination</dt><dd>A plausible but false statement made with confidence: a made-up number, quote or citation.</dd>
+      <dt>Abstain</dt><dd>Decline to give a specific answer ("I don't know").</dd>
+      <dt>Silicon sample</dt><dd>Survey respondents simulated by a language model instead of real people.</dd>
+    </dl>
+  </section>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section 4 lab. The survey answers in Part 1 and the questions in Part 2 are simulated by this page. The tiny transformer was trained for this lab on the simulated answers. Poll results in Part 3 are from Pew Research Center (2021–2026). Recap figures: Session 7 (Yiqing Xu); Vaswani et al. (2017); Brown et al. (2020); Kaplan et al. (2020); Liu et al. (2024); OpenAI (2025); Kalai et al. (2025).</p>
+    <p>Your name and answers are stored only in this browser (nothing is sent anywhere). Anything you paste into a chatbot goes to that chatbot's company, so don't paste personal information. AI-use note: drafted with Claude Code (Claude Opus 5.5) and reviewed by the teaching team. <button type="button" class="linkbtn" id="reset-all">Clear my answers on this page</button></p>
+  </footer>
+</main>
+
+<script src="data.js"></script>
+<script src="lm.js"></script>
+<script src="tiny-transformer.js"></script>
+<script src="transformer.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

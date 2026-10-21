@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section Assignment 4 · How a chatbot guesses public opinion · POLISCI 158</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; font-size: .95rem; margin: .5rem 0 0; }
+  .meta b { font-weight: 600; }
+  @media print { .btn-row { display: none; } h2 { margin-top: 1.4rem; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">POLISCI 158 · Section 4</a>
+    <nav aria-label="Page links">
+      <a href="index.html">← Lab page</a>
+      <a href="index.html#submit">Submit</a>
+      <a href="../index.html">All sections</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero" style="padding-bottom:0">
+    <p class="eyebrow">Section Assignment 4</p>
+    <h1>How a chatbot guesses public opinion</h1>
+    <div class="meta">
+      <span><b>Graded:</b> Pass / No-Pass</span>
+      <span><b>Due:</b> at the end of your Section 4 meeting</span>
+      <span><b>Submit:</b> one file (or pasted text) on Canvas</span>
+    </div>
+    <div class="btn-row">
+      <a class="btn" href="index.html">Open the lab</a>
+      <button type="button" class="btn secondary" onclick="window.print()">Print</button>
+    </div>
+  </section>
+
+  <h2>Why this assignment</h2>
+  <p>Session 7 showed that a large language model writes by predicting the next token. Today you look inside: how a transformer uses attention to read its context, and why models confidently make things up. Then you test a chatbot on a real question about public opinion on AI.</p>
+
+  <h2>What to do</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Part</th><th>Time</th><th>What you do</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">1 · Two models</th><td>~8 min</td><td>Compare a counting model with a tiny transformer, both trained on 10,000 simulated survey answers about AI. Look at where its attention goes. Record at least 3 runs and answer 1A–1C.</td></tr>
+      <tr><th scope="row">2 · Guessing game</th><td>~4 min</td><td>Set when a model should answer and when it should say "I don't know", under two grading rules. Record at least 3 settings and answer 2A–2B.</td></tr>
+      <tr><th scope="row">3 · Silicon sample</th><td>~9 min</td><td>Write your guess, have a chatbot simulate 40 respondents, ask it for the real number with a source, and compare with Pew's June 2026 poll. Answer 3A–3C.</td></tr>
+      <tr><th scope="row">4 · Memo</th><td>~3 min</td><td>In 4–6 sentences, advise a campaign that wants to replace its poll with a chatbot.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted small">The survey answers and game questions are simulated. Part 3 uses a chatbot of your choice and a real Pew Research Center poll.</p>
+
+  <h2>To pass</h2>
+  <ul>
+    <li>The file has your name, <b>at least 3 runs in Part 1</b>, <b>at least 3 settings in Part 2</b>, and in Part 3 <b>your guesses, at least 1 chatbot sample and the citation check</b>.</li>
+    <li>All nine questions (1A–1C, 2A–2B, 3A–3C, Part 4) have a real attempt. Short is fine; blank is not.</li>
+    <li>The answers are in your own words. You may work in pairs and discuss, but each person writes and submits their own answers.</li>
+  </ul>
+  <p>Wrong answers don't fail. This is graded on a real attempt, not on matching the poll.</p>
+
+  <h2>How to submit</h2>
+  <ol>
+    <li>At the bottom of the lab page, press <b>Download my submission</b>.</li>
+    <li>On Canvas, open <b>Section 4 lab</b> and upload the file. Or press <b>Copy</b> and paste the text into the text box.</li>
+    <li>Submit before you leave section.</li>
+  </ol>
+
+  <h2>If you can't finish in section</h2>
+  <p>Submit what you have before you leave. Late submissions and resubmissions are not accepted. If you missed section, contact your TA.</p>
+
+  <h2>Privacy</h2>
+  <p>Your name and answers are stored only in your browser until you download them. The page doesn't send anything anywhere. What you paste into a chatbot does go to that chatbot's company, so don't paste personal information.</p>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section Assignment 4.</p>
+  </footer>
+</main>
+</body>
+</html>

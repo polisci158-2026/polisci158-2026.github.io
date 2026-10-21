@@ -66,7 +66,22 @@ window.SECTIONS = [
       href: "section-03/assignment.html"
     }
   },
-  { num: 4, status: "upcoming", title: "To be announced", summary: "", links: [] },
+  {
+    num: 4,
+    status: "published",
+    title: "How a chatbot guesses public opinion",
+    summary: "Look inside the kind of model a chatbot is built on, see why it guesses when it doesn't know, then test whether a chatbot can tell you what a Pew poll found.",
+    links: [
+      { label: "Lab", href: "section-04/index.html", primary: true },
+      { label: "Assignment", href: "section-04/assignment.html" }
+    ],
+    assignment: {
+      title: "How a chatbot guesses public opinion",
+      grading: "Pass / No-Pass",
+      due: "End of your Section 4 meeting (see Canvas)",
+      href: "section-04/assignment.html"
+    }
+  },
   { num: 5, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 6, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 7, status: "upcoming", title: "To be announced", summary: "", links: [] },
