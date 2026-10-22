@@ -1,9 +1,10 @@
 /* POLISCI 158 · Section 4 lab — page behavior.
-   Everything is stored in this browser's localStorage under the "ps158s4:" prefix. */
+   Everything is stored in this browser's localStorage under the "ps158s4v2:" prefix.
+   (v2: the first draft of this page saved runs in a different shape under "ps158s4:".) */
 (function () {
   "use strict";
 
-  var KEY = "ps158s4:";
+  var KEY = "ps158s4v2:";
   var QUESTIONS = ["q1a", "q1b", "q1c", "q2a", "q2b", "q3a", "q3b", "q3c", "q4"];
   var Q_LABELS = {
     q1a: "1A · Same last words, different meaning", q1b: "1B · More text or a better design?", q1c: "1C · The number neither model can know",
@@ -193,7 +194,7 @@
   segmented("data-head", function (v) { p1.head = v.split(",").map(Number); });
 
   /* ---------- Part 1 runs ---------- */
-  var runs1 = load("runs1", []);
+  var runs1 = load("runs1", []).filter(function (r) { return r && r.cTop && r.tTop && r.head; });
   function short(top) { return top.slice(0, 3).map(function (t) { return word(t.word) + " " + Math.round(100 * t.p) + "%"; }); }
   $("#record1").addEventListener("click", function () {
     withModel(function () {
@@ -246,7 +247,7 @@
   $("#thresh").addEventListener("input", function () { game.t = +this.value / 100; drawGame(); });
   segmented("data-pen", function (v) { game.pen = +v; drawGame(); });
 
-  var runs2 = load("runs2", []);
+  var runs2 = load("runs2", []).filter(function (r) { return r && isFinite(r.t) && isFinite(r.s1); });
   $("#record2").addEventListener("click", function () {
     runs2.push(gameStats()); save("runs2", runs2);
     flash($("#record2"), "✓ Recorded"); refresh();
@@ -293,7 +294,7 @@
   }
   $$("[data-cnt]").forEach(function (el) { el.addEventListener("input", totals); });
 
-  var runs3 = load("runs3", []);
+  var runs3 = load("runs3", []).filter(function (r) { return r && isFinite(r.dc) && isFinite(r.rc); });
   $("#add-sample").addEventListener("click", function () {
     var c = counts(), nd = c.dc + c.de + c.dq, nr = c.rc + c.re + c.rq, msg = $("#sample-msg");
     if (!nd || !nr) { msg.textContent = "Enter the counts for both parties first."; return; }
