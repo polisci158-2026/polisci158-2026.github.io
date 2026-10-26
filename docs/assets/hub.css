@@ -27,7 +27,7 @@ h1, h2 { font-family: var(--font-heading); font-weight: 600; line-height: 1.2; }
 h1 { font-size: 2.4rem; margin: 0 0 .5rem; }
 h2 { font-size: 1.7rem; margin: 3rem 0 .75rem; }
 
-.wrap { max-width: 50rem; margin: 0 auto; padding: 0 1.25rem; }
+.wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
 .muted { color: var(--muted); }
 .eyebrow {
   font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
@@ -47,6 +47,31 @@ h2 { font-size: 1.7rem; margin: 3rem 0 .75rem; }
 .topbar nav { display: flex; gap: 1rem; font-size: .92rem; }
 .topbar nav a { color: var(--muted); text-decoration: none; }
 .topbar nav a:hover { color: var(--accent); }
+
+.topbar-link { color: var(--muted); text-decoration: none; font-size: .92rem; }
+.topbar-link:hover { color: var(--accent); }
+
+/* ---------- Layout: navigation left, content right ---------- */
+.layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); column-gap: 3rem; }
+.layout > main { min-width: 0; max-width: 46rem; }
+
+.sidenav {
+  position: sticky; top: 3.5rem; align-self: start;
+  max-height: calc(100vh - 3.5rem); overflow-y: auto;
+  padding: 2.6rem 0 2rem;
+}
+.sidenav ul { list-style: none; margin: 0 0 1.6rem; padding: 0; }
+.sidenav li { margin: 0; }
+.sidenav li a, .sidenav li span {
+  display: block; padding: .3rem 0 .3rem .75rem; border-left: 2px solid var(--line);
+  color: var(--fg); text-decoration: none; font-size: .93rem; line-height: 1.35;
+}
+.sidenav li span.muted { color: var(--muted); }
+.sidenav li a:hover { color: var(--accent); border-left-color: var(--accent); }
+.nav-group {
+  margin: 0 0 .4rem; font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted);
+}
 
 /* ---------- Hero ---------- */
 .hero { padding: 3rem 0 .5rem; }
@@ -106,16 +131,30 @@ td:first-child, th:first-child { width: 2.5rem; }
 
 footer.site-footer { margin: 4rem 0 0; padding: 1.5rem 0 3rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
 
+@media (max-width: 899px) {
+  /* Navigation moves below the content on narrow screens */
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .sidenav { position: static; max-height: none; order: 2; padding: 1.5rem 0 1rem; border-top: 1px solid var(--line); }
+  .sidenav li a, .sidenav li span { padding-block: .55rem; }
+}
 @media (max-width: 640px) {
   h1 { font-size: 2rem; }
-  .topbar nav { display: none; }
   .row .num { width: 1.9rem; height: 1.9rem; font-size: .9rem; }
 }
 @media print {
   .topbar { position: static; }
+  .sidenav { display: none; }
   .btn-row { display: none; }
 }
 
 
-/* ---------- Course section (sits between hero and featured card) ---------- */
-#course h2 { margin-top: 2rem; }
+/* ---------- Lectures: one compact strip between hero and featured card ---------- */
+.lectures {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem;
+  margin-top: 1.5rem; padding: .7rem 1rem;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+  font-size: .92rem;
+}
+.lectures p { margin: 0; flex: 1 1 18rem; color: var(--muted); }
+.lectures strong { color: var(--fg); }
+.lectures .btn-row { margin: 0; }

@@ -15,102 +15,91 @@
 <header class="topbar">
   <div class="wrap">
     <a class="brand" href="#top">POLISCI 158 · Sections</a>
-    <nav aria-label="Page sections">
-      <a href="#course">Lectures</a>
-      <a href="#all-sections">All sections</a>
-      <a href="#assignments">Assignments</a>
-    </nav>
+    <a class="topbar-link" href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website ↗</a>
   </div>
 </header>
 
-<main id="top" class="wrap">
-  <section class="hero">
-    <p class="eyebrow">AI &amp; Politics · Stanford · Fall 2026</p>
-    <h1>Section materials</h1>
-    <p class="lede">The course has eight sections, run by the teaching team, that combine hands-on workshops with seminar-style discussion. Workshop guides and assignments go up here before each section meets. Deadlines and submissions are on Canvas.</p>
-  </section>
+<div class="wrap layout">
+  <!-- Left: navigation. hub.js fills the section list from assets/sections.js -->
+  <nav class="sidenav" aria-label="Site">
+    <p class="nav-group">Sections</p>
+    <ul id="nav-sections">
+      <li><a href="section-01/index.html">1 · Getting started: a coding agent + GitHub</a></li>
+      <li><a href="section-02/index.html">2 · Train a neural network, then question it</a></li>
+      <li><a href="section-03/index.html">3 · From an empty folder to a figure</a></li>
+      <li><a href="section-04/index.html">4 · How a chatbot guesses public opinion</a></li>
+      <li><a href="section-05/index.html">5 · Can you train a neutral AI?</a></li>
+    </ul>
 
-  <section id="course">
-    <h2>Lectures</h2>
-    <p>Lectures run on two tracks: the <strong>politics track</strong> meets on Mondays and the <strong>tech track</strong> (taught by Yiqing Xu) on Wednesdays. Slides, prep decks, handouts and the final project guide are on the course website.</p>
-    <div class="btn-row">
-      <a class="btn" href="https://simonepaciphd.github.io/polisci158-ai-politics/">Lecture materials</a>
-      <a class="btn secondary" href="https://simonepaciphd.github.io/polisci158-ai-politics/project/index.html">Final project guide</a>
-    </div>
-  </section>
+    <p class="nav-group">On this page</p>
+    <ul>
+      <li><a href="#course">Lectures</a></li>
+      <li><a href="#all-sections">All sections</a></li>
+      <li><a href="#assignments">Section assignments</a></li>
+    </ul>
 
-  <section class="featured" id="featured" hidden aria-label="Latest section"></section>
+    <p class="nav-group">Course</p>
+    <ul>
+      <li><a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Lecture materials ↗</a></li>
+      <li><a href="https://simonepaciphd.github.io/polisci158-ai-politics/project/index.html">Final project guide ↗</a></li>
+    </ul>
+  </nav>
 
-  <section id="all-sections">
-    <div class="list-head">
-      <h2>All sections</h2>
-      <span class="muted" id="count"></span>
-    </div>
-    <ol class="sections" id="section-list">
-      <!-- Fallback if JavaScript is off; hub.js replaces this list from assets/sections.js -->
-      <li class="row" id="section-1">
-        <span class="num" aria-hidden="true">1</span>
-        <div class="row-body">
-          <h3>Getting started: a coding agent + GitHub</h3>
-          <div class="btn-row">
-            <a class="btn small-btn" href="section-01/index.html">Workshop guide</a>
-            <a class="btn secondary small-btn" href="section-01/assignment.html">Assignment</a>
-          </div>
-        </div>
-      </li>
-      <li class="row" id="section-2">
-        <span class="num" aria-hidden="true">2</span>
-        <div class="row-body">
-          <h3>Train a neural network, then question it</h3>
-          <div class="btn-row">
-            <a class="btn small-btn" href="section-02/index.html">Lab</a>
-            <a class="btn secondary small-btn" href="section-02/assignment.html">Assignment</a>
-          </div>
-        </div>
-      </li>
-      <li class="row" id="section-3">
-        <span class="num" aria-hidden="true">3</span>
-        <div class="row-body">
-          <h3>From an empty folder to a figure</h3>
-          <div class="btn-row">
-            <a class="btn small-btn" href="section-03/index.html">Workshop guide</a>
-            <a class="btn secondary small-btn" href="section-03/assignment.html">Assignment</a>
-          </div>
-        </div>
-      </li>
-      <li class="row" id="section-4">
-        <span class="num" aria-hidden="true">4</span>
-        <div class="row-body">
-          <h3>How a chatbot guesses public opinion</h3>
-          <div class="btn-row">
-            <a class="btn small-btn" href="section-04/index.html">Lab</a>
-            <a class="btn secondary small-btn" href="section-04/assignment.html">Assignment</a>
-          </div>
-        </div>
-      </li>
-    </ol>
-  </section>
+  <!-- Right: content -->
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">AI &amp; Politics · Stanford · Fall 2026</p>
+      <h1>Section materials</h1>
+      <p class="lede">The course has eight sections, run by the teaching team, that combine hands-on workshops with seminar-style discussion. Workshop guides and assignments go up here before each section meets. Deadlines and submissions are on Canvas.</p>
+    </section>
 
-  <section id="assignments">
-    <h2>Section assignments</h2>
-    <p class="muted">Submit on Canvas. The exact deadline for each assignment is posted there.</p>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th scope="col">#</th><th scope="col">Assignment</th><th scope="col">Grading</th><th scope="col">Due</th></tr></thead>
-        <tbody id="assignment-rows">
-          <tr><td>1</td><td><a href="section-01/assignment.html">Make your personal website</a></td><td>Pass / No-Pass</td><td>Before Section 2 (see Canvas)</td></tr>
-          <tr><td>2</td><td><a href="section-02/assignment.html">Train a neural network, then question it</a></td><td>Pass / No-Pass</td><td>End of your Section 2 meeting (see Canvas)</td></tr>
-          <tr><td>3</td><td><a href="section-03/assignment.html">Reproduce a figure with your agent</a></td><td>Pass / No-Pass</td><td>Before Section 4 (see Canvas)</td></tr>
-          <tr><td>4</td><td><a href="section-04/assignment.html">How a chatbot guesses public opinion</a></td><td>Pass / No-Pass</td><td>End of your Section 4 meeting (see Canvas)</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+    <section id="course" class="lectures" aria-labelledby="course-h">
+      <p><strong id="course-h">Lectures</strong> · Politics track on Mondays, tech track on Wednesdays. Slides and handouts are on the course website.</p>
+      <div class="btn-row">
+        <a class="btn small-btn" href="https://simonepaciphd.github.io/polisci158-ai-politics/">Lecture materials</a>
+        <a class="btn secondary small-btn" href="https://simonepaciphd.github.io/polisci158-ai-politics/project/index.html">Final project guide</a>
+      </div>
+    </section>
 
-  <footer class="site-footer">
-    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section materials maintained by the teaching team. <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>.</p>
-  </footer>
-</main>
+    <section class="featured" id="featured" hidden aria-label="Latest section"></section>
+
+    <section id="all-sections">
+      <div class="list-head">
+        <h2>All sections</h2>
+        <span class="muted" id="count"></span>
+      </div>
+      <ol class="sections" id="section-list">
+        <!-- Fallback if JavaScript is off; hub.js replaces this list from assets/sections.js -->
+        <li class="row"><span class="num" aria-hidden="true">1</span><div class="row-body"><h3><a href="section-01/index.html">Getting started: a coding agent + GitHub</a></h3></div></li>
+        <li class="row"><span class="num" aria-hidden="true">2</span><div class="row-body"><h3><a href="section-02/index.html">Train a neural network, then question it</a></h3></div></li>
+        <li class="row"><span class="num" aria-hidden="true">3</span><div class="row-body"><h3><a href="section-03/index.html">From an empty folder to a figure</a></h3></div></li>
+        <li class="row"><span class="num" aria-hidden="true">4</span><div class="row-body"><h3><a href="section-04/index.html">How a chatbot guesses public opinion</a></h3></div></li>
+        <li class="row"><span class="num" aria-hidden="true">5</span><div class="row-body"><h3><a href="section-05/index.html">Can you train a neutral AI?</a></h3></div></li>
+      </ol>
+    </section>
+
+    <section id="assignments">
+      <h2>Section assignments</h2>
+      <p class="muted">Submit on Canvas. The exact deadline for each assignment is posted there.</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">#</th><th scope="col">Assignment</th><th scope="col">Grading</th><th scope="col">Due</th></tr></thead>
+          <tbody id="assignment-rows">
+            <tr><td>1</td><td><a href="section-01/assignment.html">Make your personal website</a></td><td>Pass / No-Pass</td><td>Before Section 2 (see Canvas)</td></tr>
+            <tr><td>2</td><td><a href="section-02/assignment.html">Train a neural network, then question it</a></td><td>Pass / No-Pass</td><td>End of your Section 2 meeting (see Canvas)</td></tr>
+            <tr><td>3</td><td><a href="section-03/assignment.html">Reproduce a figure with your agent</a></td><td>Pass / No-Pass</td><td>Before Section 4 (see Canvas)</td></tr>
+            <tr><td>4</td><td><a href="section-04/assignment.html">How a chatbot guesses public opinion</a></td><td>Pass / No-Pass</td><td>End of your Section 4 meeting (see Canvas)</td></tr>
+            <tr><td>5</td><td><a href="section-05/index.html#submit">Can you train a neutral AI? (lab submission)</a></td><td>Pass / No-Pass</td><td>End of your Section 5 meeting (see Canvas)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section materials maintained by the teaching team. <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>.</p>
+    </footer>
+  </main>
+</div>
 
 <script src="assets/sections.js"></script>
 <script src="assets/hub.js"></script>

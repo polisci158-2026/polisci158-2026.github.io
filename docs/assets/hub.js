@@ -56,6 +56,20 @@
     });
   }
 
+  /* ---------- Left navigation ---------- */
+  var nav = document.getElementById("nav-sections");
+  if (nav) {
+    nav.textContent = "";
+    sections.forEach(function (s) {
+      var label = s.num + " · " + s.title;
+      var primary = (s.links || []).filter(function (l) { return l.primary; })[0] || (s.links || [])[0];
+      var item = s.status === "published" && primary
+        ? el("a", { href: primary.href, text: label })
+        : el("span", { class: "muted", text: s.num + " · Coming soon" });
+      nav.appendChild(el("li", {}, [item]));
+    });
+  }
+
   /* ---------- Assignments table ---------- */
   var tbody = document.getElementById("assignment-rows");
   var withAssignment = published.filter(function (s) { return s.assignment; });
@@ -66,7 +80,7 @@
       tbody.appendChild(el("tr", {}, [
         el("td", { text: String(s.num) }),
         el("td", {}, [a.href ? el("a", { href: a.href, text: a.title }) : document.createTextNode(a.title)]),
-        el("td", { text: a.grading || "" }),
+        el("td", { text: a.grading || "See Canvas" }),
         el("td", { text: a.due || "" })
       ]));
     });

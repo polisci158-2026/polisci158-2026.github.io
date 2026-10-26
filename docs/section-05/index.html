@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 5 · Can you train a neutral AI? · POLISCI 158</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=34">
+<style>
+  /* Added on the section website: links back to the hub and course site, visible at every width */
+  .topbar .site-links { display: flex; gap: 1rem; font-size: .92rem; }
+  .topbar .site-links a { color: var(--muted); text-decoration: none; }
+  .topbar .site-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<a id="top"></a>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html">POLISCI 158 · Section 5</a>
+    <nav aria-label="Sections of this page">
+      <a href="#discuss">Discussion</a>
+      <a href="#part1">Part 1</a>
+      <a href="#part2">Part 2</a>
+      <a href="#part3">Part 3</a>
+      <a href="#submit">Submit</a>
+      <a href="#data">Data</a>
+    </nav>
+    <div class="site-links">
+      <a href="../index.html">Section website</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website ↗</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<main class="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="dev-banner" id="dev-banner" hidden role="alert"></div>
+    <p class="eyebrow">Week 6 · Section 5 · Lab</p>
+    <h1>Can you train a politically neutral AI?</h1>
+    <p class="lede">Session 9 ended on a question: is a politically neutral AI possible, and whose standard of neutral should it meet? Today you'll argue about it and write your own neutrality rule. Then you'll use your rule the way AI companies use theirs: rate replies, build a reward model, and train a model toward it. Last, you'll see what happened when we trained a real model on two different rules.</p>
+
+    <div class="controls" aria-label="Your details">
+      <div>
+        <label for="s-name">Your name</label>
+        <input id="s-name" type="text" autocomplete="name" spellcheck="false" placeholder="e.g. Jordan Rivera">
+        <p class="hint">Goes on your submission. Stored only in this browser.</p>
+      </div>
+      <div>
+        <label for="s-partner">Partner's name <span class="muted" style="font-weight:400">(optional)</span></label>
+        <input id="s-partner" type="text" autocomplete="off" spellcheck="false" placeholder="if you worked in a pair">
+        <p class="hint">Pairs can share a laptop, but each person submits their own answers.</p>
+      </div>
+    </div>
+
+    <div class="progress" aria-live="polite">
+      <div class="bar" aria-hidden="true"><span id="progress-fill"></span></div>
+      <span id="progress-text">0 items done</span>
+      <button type="button" class="linkbtn" id="reset-all">Reset (clear my work)</button>
+    </div>
+
+    <ul class="outcomes four">
+      <li><strong>Discussion · 10 min</strong>Test how Anthropic and OpenAI measured neutrality. Write your own rule.</li>
+      <li><strong>Part 1 · 7 min</strong>Be the rater: pick the better of two real replies, by your rule.</li>
+      <li><strong>Part 2 · 5 min</strong>Turn your picks into a reward model and look inside it.</li>
+      <li><strong>Part 3 · 16 min</strong>See what training does: on one request, then in a real training run.</li>
+    </ul>
+
+    <div class="callout provenance-note">
+      <p><strong>Every reply and every score on this page is real.</strong> A real model (<span data-fill="policy"></span>) wrote the replies. A real AI judge (<span data-fill="judge"></span>) graded them, using Anthropic's published grading instructions. The training results come from a real training run. Nothing was written or edited by hand. Your browser only does math on these results. <a href="#data">Where the data come from</a></p>
+    </div>
+  </section>
+
+  <!-- ============ RECAP ============ -->
+  <section id="recap">
+    <h2>Recap: how post-training works</h2>
+    <p class="muted">From Session 9. Your TA will go over this at the start.</p>
+    <div class="compare-flow rlhf-flow">
+      <div><span class="where">Step 1</span><span class="pill">People write good answers</span> → <span class="pill out">the model imitates them</span></div>
+      <div><span class="where">Step 2</span><span class="pill">People pick the better of two replies</span> → <span class="pill out">a <b>reward model</b> learns to predict their picks</span></div>
+      <div><span class="where">Step 3</span><span class="pill">The model practices; the reward model scores each try</span> → <span class="pill out">it shifts toward high scores</span></div>
+    </div>
+    <p><b>What's different today.</b> Raters usually follow a written guide. Here, the guide is a single <b>neutrality rule</b>. In our real run, an AI judge applied the rule in place of human raters. That approach is called RLAIF (reinforcement learning from AI feedback). Using an AI as the grader is also how Anthropic and OpenAI measured the neutrality of their models, in the two articles you'll discuss.</p>
+
+    <div id="base-demo" class="base-demo" hidden>
+      <h3>Before and after post-training, same request</h3>
+      <p class="small muted" id="base-demo-cap"></p>
+      <div class="pair-cols">
+        <div class="reply"><p class="res-h" id="base-demo-h1"></p><div class="reply-text" id="base-demo-base"></div></div>
+        <div class="reply"><p class="res-h" id="base-demo-h2"></p><div class="reply-text" id="base-demo-inst"></div></div>
+      </div>
+      <p class="small"><b>Look closely:</b> what is the base model doing with the request? What did post-training change?</p>
+    </div>
+  </section>
+
+  <!-- ============ DISCUSSION ============ -->
+  <section id="discuss">
+    <h2>Discussion · Is a politically neutral AI possible?</h2>
+
+    <div class="q-card">
+      <p class="res-h">Today's question · from Session 9</p>
+      <p class="q-big">"Is a politically neutral AI possible? Whose standard of neutral should it meet?"</p>
+    </div>
+
+    <p><b>What we discuss.</b> Two companies have tried to measure how politically neutral their models are, and published how. We look at what each one counted as neutral, how it measured it, and what it found.</p>
+
+    <div class="claim-cols">
+      <div class="claim-card">
+        <p class="res-h">Anthropic · November 13, 2025</p>
+        <p class="claim-src"><a href="https://www.anthropic.com/news/political-even-handedness" target="_blank" rel="noopener">"Measuring political bias in Claude"</a></p>
+        <dl class="claim-dl">
+          <dt>Neutral means</dt><dd><b>Help both sides equally</b>: give "the best case for most viewpoints if asked to do so", and show several views where there is no consensus.</dd>
+          <dt>The test</dt><dd>1,350 pairs of requests on 150 mostly U.S. topics. Each pair asks for the same thing from opposite sides, e.g. <i>"Argue that rent control protects tenants"</i> and <i>"Argue that rent control reduces housing supply."</i></dd>
+          <dt>Graded by</dt><dd>An AI: Claude Sonnet 4.5, checked against Claude Opus 4.1 and GPT-5.</dd>
+          <dt>Found</dt><dd>Claude Sonnet 4.5 helped both sides equally <b>94%</b> of the time (GPT-5: 89%, Llama 4 Maverick: 66%). It mentioned the other side in <b>35%</b> of replies and refused 3%.</dd>
+        </dl>
+      </div>
+      <div class="claim-card">
+        <p class="res-h">OpenAI · October 9, 2025</p>
+        <p class="claim-src"><a href="https://openai.com/index/defining-and-evaluating-political-bias-in-llms/" target="_blank" rel="noopener">"Defining and evaluating political bias in LLMs"</a></p>
+        <dl class="claim-dl">
+          <dt>Neutral means</dt><dd><b>Avoid five things</b>: dismissing the user's view, amplifying a charged tone, giving its own political opinions, covering only one side, and refusing political questions without reason.</dd>
+          <dt>The test</dt><dd>About 500 questions on 100 topics. Each question is asked in five versions from different political slants, from neutral to emotionally charged.</dd>
+          <dt>Graded by</dt><dd>An AI: an OpenAI model scored each reply on the five things.</dd>
+          <dt>Found</dt><dd>GPT-5 showed about <b>30% less bias</b> than earlier models. Bias was rare on neutral questions and moderate on charged ones.</dd>
+        </dl>
+      </div>
+    </div>
+    <p class="small muted">Notice: the two companies did not count the same things. Anthropic mostly compares how much a model helps each side. OpenAI mostly counts what a model should avoid.</p>
+
+    <p class="res-h">Pairs · 3 min · Your TA gives your pair one question</p>
+    <div class="s9-qs">
+      <div class="s9-q">
+        <p class="res-h">Question 1 · Session 9</p>
+        <p class="s9-quote">"Is a politically neutral AI possible? Whose standard of neutral should it meet?"</p>
+        <p>Anthropic counts equal help for both sides; OpenAI counts what a model avoids. Is either the same as being objective?</p>
+      </div>
+      <div class="s9-q">
+        <p class="res-h">Question 2 · Session 9</p>
+        <p class="s9-quote">"OpenAI's rulebook says the assistant should 'clearly state' that genocide and slavery are wrong. Which other questions belong on that list?"</p>
+        <p>The test asks a model to argue both sides of "the 2020 election was conducted fairly." Should it?</p>
+      </div>
+      <div class="s9-q">
+        <p class="res-h">Question 3 · Session 9</p>
+        <p class="s9-quote">"Who should decide how an AI assistant talks about politics? The company, policymakers, the users, or no one?"</p>
+        <p>Both companies wrote their own test and graded their own model with their own AI. Who should check it?</p>
+      </div>
+    </div>
+    <p>Every pair also answers: <b>what evidence would change your mind?</b></p>
+
+    <div class="disc-steps">
+      <div><span class="where">Class · 2 min</span>Each pair gives its answer in one sentence, and the evidence that would change its mind. Notice how many different standards of "neutral" the room comes up with.</div>
+    </div>
+
+    <div class="disc-steps">
+      <div><span class="where">Alone · 2 min</span>Write your own rule and a prediction. Use what you just heard in the discussion.</div>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">Your neutrality rule</p>
+        <p>One sentence an AI rater could follow to pick the better of two replies. You'll rate by it in Part 1. Write your own, or click one of these to start, then make it yours:</p>
+        <div class="chips" id="rule-chips">
+          <button type="button" class="chip" data-rule="Balance: even if asked to argue one side, give both sides and take none.">Balance</button>
+          <button type="button" class="chip" data-rule="Helpful: if asked to argue one side, argue it well, and do the same for the other side.">Helpful</button>
+          <button type="button" class="chip" data-rule="Helpful for either side, but don't argue against settled facts.">Helpful, but don't balance settled facts</button>
+        </div>
+        <textarea data-q="d2" id="rule-text" aria-label="Your neutrality rule" style="min-height:3.5rem"></textarea>
+      </li>
+      <li>
+        <p class="task-h">Your prediction</p>
+        <p>Complete it: <i>"If a model is trained to score as high as possible on my rule, it will …"</i> You'll check this in Part 3.</p>
+        <textarea data-q="d3" aria-label="Your prediction"></textarea>
+      </li>
+    </ol>
+
+    <h3>From the two articles to our two rules</h3>
+    <p>To grade replies, each company wrote instructions for its AI grader: what counts as a good, neutral reply. Instructions like that are a <b>neutrality rule</b>, like the one you just wrote. In post-training, the same kind of rule guides the raters, and the model is trained toward what they pick.</p>
+    <p>The things the two articles count can point in different directions. The clearest case: <b>a user asks the model to argue one side.</b> Helping that side well counts toward "help both sides equally". Adding the other side counts toward "mention the other side" and away from "covering only one side". Anthropic's own numbers show the gap: Claude helped both sides equally 94% of the time, but mentioned the other side in only 35% of replies.</p>
+    <p>We turned the two answers into two rules. Our real training run used both, and Part 1 shows the AI judge's verdict under each.</p>
+    <div class="rule-pair" id="rule-pair" aria-label="Our two rules"></div>
+    <p><b>Compare with yours.</b> Is your rule closer to Balance, to Helpful, or to neither? You can still edit it above. In Part 1 you rate by your own rule, and see how the judge ruled under ours.</p>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section id="part1">
+    <h2>Part 1 · Be the rater</h2>
+    <p>Below are two replies the model wrote to the same request. <b>Pick the better one by your rule</b>, not by which side you agree with. After each pick, you'll see two things: exactly what the model was asked when it wrote each reply (some replies were written from a reworded request, so the pairs differ clearly), and how the AI judge ruled under each of our two rules (in the box below). Rate all <b><span data-fill="rate-n"></span> pairs</b>. They were picked from the run to cover the main kinds of pairs: mostly a one-sided reply against a both-sides one, plus a refusal and an everyday reply.</p>
+    <p class="small muted">Replies were capped at <span data-fill="max-tokens"></span> tokens (about <span data-fill="max-words"></span> words), so some end mid-sentence. Judge the part you can read.</p>
+    <p class="small">The judge's two rules are <b>Balance</b> and <b>Helpful</b>, from the discussion (<a href="#rule-pair">see them again</a>).</p>
+    <p class="your-rule"><span class="res-h">Your rule</span> <span id="rule-echo" class="muted">(write it in the discussion first)</span></p>
+
+    <div class="lab" id="rater">
+      <div class="rater-head">
+        <span class="small muted" id="rate-count"></span>
+        <span class="small muted" id="rate-topic"></span>
+      </div>
+      <p class="request"><span class="res-h">Request</span> <span id="rate-prompt"></span></p>
+      <div class="pair-cols">
+        <div class="reply"><p class="res-h">Reply 1</p><div class="reply-text" id="rate-r1"></div></div>
+        <div class="reply"><p class="res-h">Reply 2</p><div class="reply-text" id="rate-r2"></div></div>
+      </div>
+      <div class="btn-row" id="rate-buttons">
+        <button type="button" class="btn" data-vote="1">Reply 1 is better</button>
+        <button type="button" class="btn" data-vote="2">Reply 2 is better</button>
+        <button type="button" class="btn secondary" data-vote="0">Can't tell</button>
+      </div>
+      <div class="reveal" id="rate-reveal" hidden aria-live="polite"></div>
+      <div class="btn-row">
+        <button type="button" class="btn secondary" id="rate-prev">← Previous</button>
+        <button type="button" class="btn secondary" id="rate-next">Next pair →</button>
+      </div>
+    </div>
+
+    <div class="score-grid">
+      <div class="score"><p class="res-h">Your picks</p><dl class="stats"><dt>Rated</dt><dd id="s-rated">–</dd><dt>"Can't tell"</dt><dd id="s-tie">–</dd></dl></div>
+      <div class="score"><p class="res-h">You agree with the judge…</p><dl class="stats"><dt>under "Balance"</dt><dd id="s-agree-balance">–</dd><dt>under "Helpful"</dt><dd id="s-agree-helpful">–</dd></dl></div>
+      <div class="score"><p class="res-h">The judge agrees with itself</p><p class="sc-rule">same verdict when the two replies swap places, on the pairs you rated</p><p class="sc-big" id="s-judge-consistent">–</p></div>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">1A · Do you agree with the judge?</p>
+        <p>Do you agree more with the judge's "Balance" verdicts or its "Helpful" verdicts? Does that fit the rule you wrote? If not, which one describes what you actually did?</p>
+        <textarea data-q="q1a" aria-label="Answer to 1A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">1B · Is the judge right?</p>
+        <p>Find a pair where you think the judge got it wrong, or where it changed its verdict when the replies swapped places. What does that tell you about using an AI to grade neutrality, as Anthropic did?</p>
+        <textarea data-q="q1b" aria-label="Answer to 1B"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section id="part2">
+    <h2>Part 2 · Your reward model</h2>
+    <p>In Session 9, a <b>reward model</b> learned from raters' picks and then gave every reply a score. Here you build a small one from your own picks. Real reward models read the whole reply. Yours only looks at five things it can count:</p>
+    <dl class="gloss" id="feature-list"></dl>
+
+    <div class="lab">
+      <div class="lab-record">
+        <button type="button" class="btn" id="fit">Build my reward model</button>
+        <span class="small muted" id="fit-note">Needs at least 6 picks (not "can't tell").</span>
+      </div>
+      <p class="small muted" style="margin:.8rem 0 0">What each set of picks favored. Bar to the right: replies with more of this were picked. Bar to the left: replies with less of it were picked.</p>
+      <div id="weights" class="weights" aria-live="polite"></div>
+      <p class="small muted" id="fit-detail"></p>
+      <details><summary>Show as table</summary><div class="table-scroll"><table class="runs" id="weights-table"></table></div></details>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">2A · What did your picks favor?</p>
+        <p>Is that what your rule meant? Compare with what the judge's two rules favored.</p>
+        <textarea data-q="q2a" aria-label="Answer to 2A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">2B · High score, wrong reply</p>
+        <p>Describe a reply that would score high on your reward model but break your rule. This is called <b>reward hacking</b>: the model learns the score, not what you meant.</p>
+        <textarea data-q="q2b" aria-label="Answer to 2B"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 3 ============ -->
+  <section id="part3">
+    <h2>Part 3 · What training does</h2>
+    <p>Training makes the replies a reward model scores high more likely. A <b>KL penalty</b> limits how far the model can move from where it started: the further it drifts, the more it costs. First see this on one request. Then see what a real training run did.</p>
+
+    <h3>Try it on one request</h3>
+    <p>For each request, the model wrote four replies: its usual reply, and three from reworded requests, as in Part 1. Pick a reward model and how much the model may change. The bars show how likely each reply becomes.</p>
+    <div class="lab" id="lab3">
+      <div class="ctrl-row">
+        <span class="ctrl-l">Request</span>
+        <span class="segmented" role="group" aria-label="Which request" id="req-pick"></span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-l">Score replies with</span>
+        <span class="segmented" role="group" aria-label="Which reward model" id="reward-src">
+          <button type="button" data-src="you" aria-pressed="true">Your reward model</button>
+          <button type="button" data-src="balance" aria-pressed="false">Balance</button>
+          <button type="button" data-src="helpful" aria-pressed="false">Helpful</button>
+        </span>
+      </div>
+      <div class="ctrl-row">
+        <label class="ctrl-l" for="beta">How much can the model change? <output id="beta-out"></output></label>
+        <input type="range" id="beta" min="0" max="12" step="1" value="0" style="flex:1;min-width:12rem">
+      </div>
+      <p class="small muted" style="margin:.3rem 0 0">← not at all (strong KL penalty) · as much as it wants (no KL penalty) →</p>
+      <p class="request"><span class="res-h">Request</span> <span id="req-text"></span></p>
+      <div id="cands3" aria-live="polite"></div>
+      <details class="small"><summary>How the page works this out</summary><p class="muted">Each reply starts equally likely. Its new chance is its starting chance × e<sup>score / β</sup>, where the slider sets β (to the right = smaller β = more change). This is the best a model can do when its change is limited, so it shows where training would end up. "Balance" and "Helpful" are the reward models we trained on the AI judge's picks under each rule.</p></details>
+    </div>
+
+    <h3>What a real training run did</h3>
+    <p id="rl-intro"></p>
+    <div class="lab">
+      <p class="res-h">During training, on <span data-fill="heldout-n"></span> new requests</p>
+      <div class="legend" id="rl-legend"></div>
+      <div class="fig3" id="fig-run"></div>
+      <p class="small muted">Each point is the average over the same new requests, at step 0 (before training), 30 and 60. Score: from each run's own reward model, the one that gave the reward, shown as the change from step 0. Even-handed and Refuses: graded by the AI judge. Hover or tap a point for the numbers.</p>
+    </div>
+
+    <h3>One request worth reading: a question with an answer key</h3>
+    <div class="lab">
+      <p>In the discussion you asked which questions should get one clear answer. The 2020 election has one: Joe Biden won. Here is how the model answered when asked for its own position, before training and after each rule.</p>
+      <p class="request"><span class="res-h">Request</span> <span id="ex2-req"></span></p>
+      <div class="ck-view ex-three" id="ex2"></div>
+      <p class="small warn-note"><b>Fact check.</b> Joe Biden won the 2020 election with about 51% of the popular vote and 306 electoral votes. Courts and state audits found no fraud that changed the result. The model is small and makes up details; the judge's grades do not check facts.</p>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">3A · One request</p>
+        <p>With your reward model, move the slider all the way to the right. Which reply wins? Is that what your rule wanted? Do "Balance" and "Helpful" pick the same reply on both requests?</p>
+        <textarea data-q="q3a" aria-label="Answer to 3A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">3B · The real run</p>
+        <p>Every run raised its score. Did the judge's grades move as much? Use one number from the charts.</p>
+        <textarea data-q="q3b" aria-label="Answer to 3B"></textarea>
+      </li>
+      <li>
+        <p class="task-h">3C · A question with an answer key</p>
+        <p>Which of the three replies is best by your rule? Did either rule teach the model to get the facts right? What does that say about measuring neutrality only by balance and even-handedness?</p>
+        <textarea data-q="q3c" aria-label="Answer to 3C"></textarea>
+      </li>
+      <li>
+        <p class="task-h">3D · Back to your prediction</p>
+        <p>Your prediction: <span id="d3-echo" class="muted">(not written yet)</span></p>
+        <p>Were you right? After today, what would you change: your rule, how it is measured, or who gets to write it?</p>
+        <textarea data-q="q3d" aria-label="Answer to 3D"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ SUBMIT ============ -->
+  <section id="submit">
+    <h2>Submit before you leave</h2>
+    <div class="callout">
+      <ul class="checklist" id="checklist"></ul>
+    </div>
+    <ol>
+      <li>Press <b>Download my submission</b>. You get a text file with your name, your rule, your picks, your recorded settings and your answers.</li>
+      <li>On Canvas, open <b>Section 5 lab</b> and upload the file. (Or press <b>Copy</b> and paste it into the text box.)</li>
+      <li>Do this before section ends. If something is missing, submit what you have.</li>
+    </ol>
+    <div class="btn-row">
+      <button type="button" class="btn" id="download">Download my submission</button>
+      <button type="button" class="btn secondary" id="copy-sub">Copy</button>
+    </div>
+    <div class="prompt" style="margin-top:1rem">
+      <div class="bar"><span>Preview</span></div>
+      <pre id="preview"></pre>
+    </div>
+  </section>
+
+  <!-- ============ DATA ============ -->
+  <section id="data">
+    <h2>Where the data come from</h2>
+    <p>Everything on this page comes from one real run. Nothing was written or edited by hand. Your browser only does math on the results.</p>
+    <dl class="gloss" id="data-summary"></dl>
+    <h3>How far to trust it</h3>
+    <ul class="trust">
+      <li id="trust-judge"></li>
+      <li><b>The models are small</b>, and they make things up. Real post-training is thousands of times larger.</li>
+      <li><b>Some replies were written from a reworded request</b>, so that pairs differ clearly. Part 1 shows the wording for each reply.</li>
+      <li><b>Nobody checks facts.</b> The judge grades balance and refusals, not whether a claim is true.</li>
+    </ul>
+    <details class="tech">
+      <summary>Technical details</summary>
+      <div class="table-scroll"><table class="runs" id="data-table"></table></div>
+      <p class="small muted">Requests and grading instructions: Anthropic, <a href="https://github.com/anthropics/political-neutrality-eval" target="_blank" rel="noopener">political-neutrality-eval</a> (CC-BY 4.0), adapted. Models: Qwen2.5 (Apache-2.0; the 3B judge under the Qwen research license). Reward models: Hugging Face TRL. Reinforcement learning: GRPO in PyTorch, with LoRA adapters (PEFT).</p>
+    </details>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="glossary">
+    <h2>Words you'll need</h2>
+    <dl class="gloss">
+      <dt>Neutrality rule</dt><dd>One written instruction that says which of two replies is better. Raters, or an AI judge, follow it.</dd>
+      <dt>Reward model</dt><dd>A model that learns from raters' picks, then gives any reply a score.</dd>
+      <dt>RLHF / RLAIF</dt><dd>Training a model toward high reward-model scores, when the picks come from humans / from an AI.</dd>
+      <dt>KL penalty</dt><dd>A limit on how far training can move the model from where it started.</dd>
+      <dt>Even-handed</dt><dd>Anthropic's measure: asked the same thing from opposite sides, does the model help both equally?</dd>
+      <dt>Reward hacking</dt><dd>Getting a high score without doing what the rule meant.</dd>
+    </dl>
+  </section>
+</main>
+
+<aside class="sidenav" aria-label="On this page">
+  <nav>
+    <p class="sn-h">On this page</p>
+    <ol>
+      <li><a href="#top">Start</a></li>
+      <li><a href="#recap">Recap</a></li>
+      <li><a href="#discuss">Discussion</a></li>
+      <li><a href="#part1">Part 1 · Be the rater</a></li>
+      <li><a href="#part2">Part 2 · Your reward model</a></li>
+      <li><a href="#part3">Part 3 · What training does</a></li>
+      <li><a href="#submit">Submit</a></li>
+      <li class="sn-sep"><a href="#data">Where the data come from</a></li>
+      <li><a href="#glossary">Words you'll need</a></li>
+    </ol>
+    <p class="sn-progress small muted" id="sn-progress"></p>
+  </nav>
+</aside>
+</div>
+
+<footer class="layout-foot small muted">
+  POLISCI 158 · AI &amp; Politics · Fall 2026 · Section materials maintained by the teaching team. <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>.
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<script src="data.js?v=23"></script>
+<script src="rate_set.js?v=1"></script>
+<script src="base_demo.js?v=1"></script>
+<script src="app.js?v=36"></script>
+</body>
+</html>

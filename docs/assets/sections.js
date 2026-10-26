@@ -82,7 +82,22 @@ window.SECTIONS = [
       href: "section-04/assignment.html"
     }
   },
-  { num: 5, status: "upcoming", title: "To be announced", summary: "", links: [] },
+  {
+    num: 5,
+    status: "published",
+    title: "Can you train a neutral AI?",
+    summary: "Argue about political neutrality and write your own neutrality rule, then use it the way AI companies do: rate replies, build a reward model, and train a model toward it.",
+    links: [
+      { label: "Lab", href: "section-05/index.html", primary: true },
+      { label: "Submit", href: "section-05/index.html#submit" }
+    ],
+    assignment: {
+      title: "Can you train a neutral AI? (lab submission)",
+      grading: "Pass / No-Pass",
+      due: "End of your Section 5 meeting (see Canvas)",
+      href: "section-05/index.html#submit"
+    }
+  },
   { num: 6, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 7, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 8, status: "upcoming", title: "To be announced", summary: "", links: [] }
