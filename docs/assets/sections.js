@@ -98,7 +98,22 @@ window.SECTIONS = [
       href: "section-05/index.html#submit"
     }
   },
-  { num: 6, status: "upcoming", title: "To be announced", summary: "", links: [] },
+  {
+    num: 6,
+    status: "published",
+    title: "Build a game, train an agent",
+    summary: "Watch a reinforcement learning agent learn a small campaign game, see what it does when the points are wrong, then build your own game and agent with your coding agent.",
+    links: [
+      { label: "Lab", href: "section-06/index.html", primary: true },
+      { label: "Assignment", href: "section-06/assignment.html" }
+    ],
+    assignment: {
+      title: "Build a game, train an agent",
+      grading: "Pass / No-Pass",
+      due: "End of your Section 6 meeting (see Canvas)",
+      href: "section-06/assignment.html"
+    }
+  },
   { num: 7, status: "upcoming", title: "To be announced", summary: "", links: [] },
   { num: 8, status: "upcoming", title: "To be announced", summary: "", links: [] }
 ];

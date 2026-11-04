@@ -13,6 +13,12 @@
   .meta b { font-weight: 600; }
   @media print { .btn-row { display: none; } h2 { margin-top: 1.4rem; } }
 </style>
+<style>
+  /* Added on the section website: links back to the hub and course site, visible at every width */
+  .topbar .site-links { display: flex; gap: 1rem; font-size: .92rem; }
+  .topbar .site-links a { color: var(--muted); text-decoration: none; }
+  .topbar .site-links a:hover { color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -22,9 +28,11 @@
     <nav aria-label="Page links">
       <a href="index.html">← Lab page</a>
       <a href="index.html#submit">Submit</a>
-      <a href="../index.html">All sections</a>
-      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>
     </nav>
+    <div class="site-links">
+      <a href="../index.html">Section website</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website ↗</a>
+    </div>
   </div>
 </header>
 

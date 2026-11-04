@@ -9,6 +9,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Added on the section website: links back to the hub and course site, visible at every width */
+  .topbar .site-links { display: flex; gap: 1rem; font-size: .92rem; }
+  .topbar .site-links a { color: var(--muted); text-decoration: none; }
+  .topbar .site-links a:hover { color: var(--accent); }
+</style>
 </head>
 <body data-route="claude">
 
@@ -22,9 +28,11 @@
       <a href="#principles">Working with agents</a>
       <a href="#stuck">Stuck?</a>
       <a href="assignment.html">Assignment</a>
-      <a href="../index.html">All sections</a>
-      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website</a>
     </nav>
+    <div class="site-links">
+      <a href="../index.html">Section website</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website ↗</a>
+    </div>
   </div>
 </header>
 

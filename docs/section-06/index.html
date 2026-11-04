@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 6 · Build a game, train an agent · POLISCI 158</title>
+<meta name="description" content="POLISCI 158 Section 6 lab: play a small campaign game, watch a reinforcement learning agent learn it, find out what happens when the reward is wrong, then build your own game and agent with your coding agent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+<style>
+  /* Added on the section website: links back to the hub and course site, visible at every width */
+  .topbar .site-links { display: flex; gap: 1rem; font-size: .92rem; }
+  .topbar .site-links a { color: var(--muted); text-decoration: none; }
+  .topbar .site-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">POLISCI 158 · Section 6</a>
+    <nav aria-label="Page sections">
+      <a href="#recap">Recap</a>
+      <a href="#part1">Part 1</a>
+      <a href="#part2">Part 2</a>
+      <a href="#part3">Part 3</a>
+      <a href="#part4">Part 4</a>
+      <a href="#submit">Submit</a>
+      <a href="assignment.html">Assignment</a>
+    </nav>
+    <div class="site-links">
+      <a href="../index.html">Section website</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website ↗</a>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <p class="eyebrow">Week 7 · Section 6 · Lab</p>
+    <h1>Build a game, train an agent</h1>
+    <p class="lede">Nobody tells a reinforcement learning agent <em>how</em> to win. It is only told what earns points, and it tries things until it scores. Today you watch one learn a small campaign game, see what it does when the points are wrong, and then build your own game and agent with your coding agent.</p>
+
+    <div class="controls" aria-label="Your details">
+      <div>
+        <label for="s-name">Your name</label>
+        <input id="s-name" type="text" autocomplete="name" spellcheck="false" placeholder="e.g. Jordan Rivera">
+        <p class="hint">Goes on your submission. Stored only in this browser.</p>
+      </div>
+      <div>
+        <label for="s-partner">Partner's name <span class="muted" style="font-weight:400">(optional)</span></label>
+        <input id="s-partner" type="text" autocomplete="off" spellcheck="false" placeholder="if you worked in a pair">
+        <p class="hint">Pairs can share ideas, but each person builds and submits their own game.</p>
+      </div>
+    </div>
+
+    <div class="progress" aria-live="polite">
+      <div class="bar" aria-hidden="true"><span id="progress-fill"></span></div>
+      <span id="progress-text">0 of 12 items done</span>
+    </div>
+
+    <ul class="outcomes four">
+      <li><strong>Part 1 · 2 min</strong>Play Campaign Trail yourself: get to the Capitol by election day.</li>
+      <li><strong>Part 2 · 8 min</strong>Train an agent on it. Then change the reward and watch it game the points.</li>
+      <li><strong>Part 3 · 20 min</strong>Build your own game and agent with Claude Code or Codex. Publish it.</li>
+      <li><strong>Part 4 · 4 min</strong>Advise a campaign that wants an agent to optimize its outreach.</li>
+    </ul>
+  </section>
+
+  <!-- ============ RECAP ============ -->
+  <section id="recap">
+    <h2>Recap: learning from rewards</h2>
+    <p class="muted">The ideas you'll use today. Your TA will go over them at the start of section; come back here if you need a reminder.</p>
+
+    <h3>1 · The loop</h3>
+    <div class="loop" aria-label="The reinforcement learning loop">
+      <span class="pill">Agent sees the state</span><span class="ar">→</span><span class="pill">picks an action</span><span class="ar">→</span><span class="pill">the game changes</span><span class="ar">→</span><span class="pill acc">a reward</span><span class="ar">→ repeat</span>
+    </div>
+    <p>In supervised learning (Section 2) every example comes with the right answer. In <strong>reinforcement learning</strong> nobody gives the right move. The agent gets only a number, the <strong>reward</strong>, sometimes long after the move that earned it, and has to work out which moves lead to more of it. What it learns is a <strong>policy</strong>: which action to take in each state.</p>
+
+    <h3>2 · Q-learning: a table of expectations</h3>
+    <p>Today's agent keeps a table. For every state and every action it stores a number <b>Q</b>: how much total reward it expects if it takes that action there and plays well afterwards. At first every Q is 0. After each move it nudges the number toward what just happened:</p>
+    <p class="formula">new Q = old Q + α × ( reward + γ × best Q of the next state − old Q )</p>
+    <ul>
+      <li><b>α</b> (learning rate): how far to move toward the new evidence each time. Today: 0.2.</li>
+      <li><b>γ</b> (discount): how much a reward one step later counts compared with one now. 0.95 means patient; 0.5 means short-sighted.</li>
+      <li>Rewards flow backward: once the square next to the goal has a high Q, the square before it learns from that, and so on back to the start.</li>
+    </ul>
+
+    <h3>3 · Explore or exploit?</h3>
+    <p>If the agent always takes the move it currently rates best (<strong>exploit</strong>), it never finds better ones. If it always moves at random (<strong>explore</strong>), it never uses what it learned. The usual fix, <strong>ε-greedy</strong>: with chance ε (say 20%) try a random move, otherwise take the best one.</p>
+
+    <h3>4 · You get what you reward, not what you want</h3>
+    <p>The reward is the only thing the agent knows about your goal. If the reward can be earned in a way you didn't intend, a good learner will find it. This is called <strong>reward hacking</strong> or <strong>specification gaming</strong>. A famous case: OpenAI (2016) trained an agent on the boat-racing game <em>CoastRunners</em>, rewarded for hitting targets along the course. It learned to circle a lagoon hitting the same respawning targets, on fire and going the wrong way, and scored higher than human players without ever finishing the race.</p>
+    <p>It's the same problem as Goodhart's law: when a measure becomes a target, it stops being a good measure. And it's not just games. The reward models in Section 5 (RLHF) are rewards too, and feeds that learn to maximize clicks or watch time are optimizing a number that stands in for what people want.</p>
+    <p class="muted small">Try it: which of these is reward hacking?</p>
+    <div class="sorter" id="sorter">
+      <div class="scenario" data-answer="hack">
+        <span>A cleaning robot rewarded for "no mess visible to its camera" learns to cover its camera.</span>
+        <span class="choices"><button type="button" data-pick="hack">Reward hacking</button><button type="button" data-pick="fine">Working as intended</button></span>
+        <p class="feedback">The reward measured what the camera saw, not how clean the room was.</p>
+      </div>
+      <div class="scenario" data-answer="fine">
+        <span>A chess agent rewarded for winning finds an opening no human had played.</span>
+        <span class="choices"><button type="button" data-pick="hack">Reward hacking</button><button type="button" data-pick="fine">Working as intended</button></span>
+        <p class="feedback">Surprising isn't the same as unintended: winning is exactly what we wanted.</p>
+      </div>
+      <div class="scenario" data-answer="hack">
+        <span>A news feed rewarded for time spent learns to show more outrage, because people keep scrolling.</span>
+        <span class="choices"><button type="button" data-pick="hack">Reward hacking</button><button type="button" data-pick="fine">Working as intended</button></span>
+        <p class="feedback">Time spent was a stand-in for "people value this." The agent maximized the stand-in.</p>
+      </div>
+      <div class="scenario" data-answer="hack">
+        <span>A chatbot rewarded by people's ratings learns to agree with whatever the user believes.</span>
+        <span class="choices"><button type="button" data-pick="hack">Reward hacking</button><button type="button" data-pick="fine">Working as intended</button></span>
+        <p class="feedback">People rate agreement highly, so the reward model does too: sycophancy. You saw reward models in Section 5.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section id="part1">
+    <h2>Part 1 · Play Campaign Trail yourself</h2>
+    <p>You're a candidate. Start at campaign headquarters (<b>H</b>) and get to the Capitol (<b>C</b>) before election day: 40 moves. Closed roads (dark) block you. Step on a <b>scandal</b> (S) and the campaign is over. The <b>TV studio</b> (T) gives airtime; it reopens 3 moves after each visit. Use the arrow keys or the buttons.</p>
+
+    <div class="lab">
+      <div class="game-grid">
+        <div>
+          <svg class="board" id="board1" role="img" aria-label="Campaign Trail board"></svg>
+          <div class="legend-row" id="legend1"></div>
+          <div class="pad" aria-label="Move">
+            <span></span><button type="button" data-move="0" aria-label="Up">↑</button><span></span>
+            <button type="button" data-move="2" aria-label="Left">←</button><button type="button" data-move="1" aria-label="Down">↓</button><button type="button" data-move="3" aria-label="Right">→</button>
+          </div>
+          <button type="button" class="btn secondary" id="play-reset">New game</button>
+        </div>
+        <div>
+          <div class="big-stats">
+            <div><b id="p1-score">0</b><span>points (reward)</span></div>
+            <div><b id="p1-steps">0 / 40</b><span>moves used</span></div>
+            <div><b id="p1-status">On the trail</b><span>status</span></div>
+          </div>
+          <p class="res-h">How points work right now</p>
+          <ul class="small" id="p1-rules" style="margin:.3rem 0"></ul>
+          <p class="small muted">These are the same points the agent gets in Part 2. Your best game: <b id="p1-best">–</b>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section id="part2">
+    <h2>Part 2 · Train an agent, then change its reward</h2>
+    <p>The agent starts knowing nothing: every Q is 0. Each training game it explores, collects rewards and updates its table. Press <b>Train</b> and watch the learning curve. <b>Watch it play</b> shows one game with no exploring: what it has actually learned. The arrows on the board show its best move from each square.</p>
+
+    <div class="lab" id="lab2">
+      <p class="res-h" style="margin-top:0">The reward (the only thing the agent knows about your goal)</p>
+      <div class="reward-grid">
+        <div><label for="r-capitol">Reach the Capitol</label><select id="r-capitol" data-r="capitol"><option value="10">+10</option><option value="5">+5</option><option value="0">0</option></select></div>
+        <div><label for="r-step">Each move</label><select id="r-step" data-r="step"><option value="-0.1">−0.1</option><option value="0">0</option><option value="-1">−1</option></select></div>
+        <div><label for="r-scandal">Scandal</label><select id="r-scandal" data-r="scandal"><option value="-5">−5</option><option value="0">0</option><option value="-20">−20</option></select></div>
+        <div><label for="r-tv">Each TV appearance</label><select id="r-tv" data-r="tv"><option value="0">0</option><option value="1">+1</option><option value="2">+2</option><option value="5">+5</option></select></div>
+      </div>
+      <div class="knobs">
+        <div class="knob"><label for="k-eps">Explore (ε)</label><select id="k-eps"><option value="0.2">20% random moves</option><option value="0.05">5%</option><option value="0.5">50%</option><option value="0">0% (never explore)</option></select></div>
+        <div class="knob"><label for="k-gamma">Patience (γ)</label><select id="k-gamma"><option value="0.95">0.95 patient</option><option value="0.8">0.8</option><option value="0.5">0.5 short-sighted</option></select></div>
+        <div class="knob"><label for="k-seed">Luck (random seed)</label><select id="k-seed"><option value="158">158 (class default)</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+      </div>
+      <p class="small muted" style="margin:.2rem 0 .6rem">Changing the reward or a setting starts a fresh agent.</p>
+
+      <div class="game-grid">
+        <div>
+          <svg class="board" id="board2" role="img" aria-label="The agent's board with its best move from each square"></svg>
+          <div class="legend-row"><span><i style="background:#2f6b45"></i>high Q</span><span><i style="background:#fff"></i>0</span><span><i style="background:#8c1515"></i>low Q</span><span>arrow = best move</span></div>
+          <div class="btn-row">
+            <button type="button" class="btn" data-train="100">Train 100 games</button>
+            <button type="button" class="btn" data-train="1000">Train 1,000</button>
+            <button type="button" class="btn secondary" id="watch">Watch it play</button>
+          </div>
+        </div>
+        <div style="min-width:0">
+          <div class="big-stats">
+            <div><b id="a-games">0</b><span>training games so far</span></div>
+            <div><b id="a-result">–</b><span>its learned game (no exploring)</span></div>
+            <div><b id="a-points">–</b><span>points in that game</span></div>
+          </div>
+          <p class="res-h">Learning curve (each point = average of 50 training games)</p>
+          <div class="curve" id="curve"></div>
+          <p class="small muted" style="margin:.2rem 0 0"><span style="color:#161719;font-weight:700">— points per game</span> (what the agent maximizes) · <span style="color:#2f6b45;font-weight:700">— % of games reaching the Capitol</span> (what the campaign wants) · <span style="color:#8c1515;font-weight:700">— TV appearances per game</span></p>
+        </div>
+      </div>
+      <div class="lab-record">
+        <button type="button" class="btn" id="record2">Record this run</button>
+        <span class="small muted">Records the reward, the settings, how many games it trained, and what its learned game does.</span>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="runs" id="runs2">
+        <thead><tr><th>#</th><th>Reward (Capitol · move · scandal · TV)</th><th>ε · γ · seed</th><th>Games</th><th>Learned game</th><th>Points</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">2A · How it learns</p>
+        <p>With the default reward, train 100 games and record; then another 100 and record. About how many games until its learned game reaches the Capitol? Look at the arrows: how did the reward at the Capitol reach the squares near the start? Then set Explore to <b>50%</b>, train 1,000 and record. Its learned game is still right, but what happens to the green line? What does exploring cost, and what is it for?</p>
+        <textarea data-q="q2a" aria-label="Answer to 2A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">2B · Airtime</p>
+        <p>The campaign's media team asks to reward TV appearances. Set TV to <b>+5</b> and press <b>Train 1,000</b> three times, recording each time, and press <b>Watch it play</b>. What does the agent learn to do? Watch the three lines on the curve: is the agent getting <em>better</em> or <em>worse</em>? By whose measure? Ask a neighbor with a different seed, or with Explore at 5%, what theirs did.</p>
+        <textarea data-q="q2b" aria-label="Answer to 2B"></textarea>
+      </li>
+      <li>
+        <p class="task-h">2C · No penalty for scandal</p>
+        <p>Put TV back to 0, set Scandal to <b>0</b>, train and record. What does the agent do now? Reaching the Capitol would still earn more, so why doesn't it learn that? What does this say about writing rewards?</p>
+        <textarea data-q="q2c" aria-label="Answer to 2C"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 3 ============ -->
+  <section id="part3">
+    <h2>Part 3 · Build your own game and agent</h2>
+    <p>Now you design the game <em>and</em> the reward. You'll use your coding agent (Claude Code or Codex, as in Section 1) to build a one-page browser game with a Q-learning agent, then publish it on your GitHub Pages site. Keep it <b>small</b>: a table of Q-values only works if the game has at most a few hundred states.</p>
+
+    <p class="res-h">1 · Pick a game</p>
+    <div class="ideas" id="ideas">
+      <label><input type="radio" name="idea" value="trail"><b>Campaign Trail, your way</b><p>Your own map and your own reward: rallies, debates, donors, a deadline. Easiest place to start.</p></label>
+      <label><input type="radio" name="idea" value="gotv"><b>Get out the vote</b><p>A canvasser on a small grid of 3–4 houses must reach supporters before polls close. Reward per door knocked, or per new voter?</p></label>
+      <label><input type="radio" name="idea" value="feed"><b>The feed</b><p>An agent picks which of 4 posts to show each round (news, sports, outrage, local). Simulated users click. Reward clicks, or something else?</p></label>
+      <label><input type="radio" name="idea" value="whip"><b>The whip</b><p>A party whip has 10 moves to visit legislators on a small map and secure votes before the roll call. What counts as success?</p></label>
+      <label style="grid-column:1/-1"><input type="radio" name="idea" value="own"><b>Your own idea</b><p>Any small game with a clear goal, where the obvious reward might not be what you really want.</p></label>
+    </div>
+    <div class="field">
+      <label for="idea-text">Describe your game in one or two sentences (it goes into the prompt)</label>
+      <textarea id="idea-text" data-a="ideaText" style="min-height:3.6rem" placeholder="e.g. A candidate on a 6×6 map has 30 moves to visit as many towns as possible before a debate in the middle of the map."></textarea>
+    </div>
+
+    <p class="res-h">2 · Build it with your coding agent</p>
+    <p>Open your <b>Section 1 website folder</b> (your <code>username.github.io</code> repository) in Claude Code or Codex. Paste these prompts one at a time. Read what it says before you paste the next one.</p>
+    <div class="prompt">
+      <div class="bar"><span>Prompt 1 · build the game</span><button type="button" class="copy" data-copy="bp1">Copy</button></div>
+      <pre id="bp1"></pre>
+    </div>
+    <div class="prompt">
+      <div class="bar"><span>Prompt 2 · check it</span><button type="button" class="copy" data-copy="bp2">Copy</button></div>
+      <pre id="bp2">Open rl-game/index.html in my browser. Then, in plain language: how many states does the game have, where in the file is the reward function, and where is the line that updates the Q-values? Point to line numbers. Train it 1,000 games yourself (you can run the training code in Node) and tell me whether the agent's learned game reaches the goal.</pre>
+    </div>
+    <div class="prompt">
+      <div class="bar"><span>Prompt 3 · try to break it</span><button type="button" class="copy" data-copy="bp3">Copy</button></div>
+      <pre id="bp3">Now help me find a reward hack. Suggest one change to reward() that sounds reasonable to a campaign but that the agent could exploit in a way we don't want. Don't change the file yet: tell me what you predict the agent will do. Then make the change as a new option in the reward controls (keep the original as the default), so I can switch between them on the page.</pre>
+    </div>
+    <div class="prompt">
+      <div class="bar"><span>Prompt 4 · publish</span><button type="button" class="copy" data-copy="bp4">Copy</button></div>
+      <pre id="bp4">Commit rl-game/ with a clear message and push it to GitHub, so it appears at https://<span class="ph">username</span>.github.io/rl-game/. Tell me the exact link, and remind me it can take a minute or two to appear.</pre>
+    </div>
+    <p class="small muted">As in Section 1: the agent's explanation is a claim, not proof. Check on the page that the agent really learns and that the hack really happens. <b>Stuck after 12 minutes?</b> Use Plan B: save <a href="rl.js" target="_blank" rel="noopener">rl.js</a> (today's game and agent, about 120 lines) into <code>rl-game/</code> and ask your agent to put a page around it with a new map and a new reward.</p>
+
+    <p class="res-h">3 · Check it, then record it</p>
+    <ul class="cp" id="checkpoints">
+      <li><label><input type="checkbox" data-cp="play"> A person can play it on the page and sees their score.</label></li>
+      <li><label><input type="checkbox" data-cp="learn"> After training, the agent's learned game reaches the goal, and the learning curve goes up.</label></li>
+      <li><label><input type="checkbox" data-cp="hack"> I tried at least one other reward, and saw what the agent did with it (a hack, or a reason it didn't hack).</label></li>
+      <li><label><input type="checkbox" data-cp="live"> It's live at my GitHub Pages link.</label></li>
+    </ul>
+    <div class="field">
+      <label for="game-url">Link to your game</label>
+      <input type="url" id="game-url" data-a="url" placeholder="https://username.github.io/rl-game/">
+    </div>
+
+    <ol class="tasks">
+      <li>
+        <p class="task-h">3A · Your reward</p>
+        <p>Write out your game's reward, part by part. What outcome did you actually want, and how well does the reward stand for it?</p>
+        <textarea data-q="q3a" aria-label="Answer to 3A"></textarea>
+      </li>
+      <li>
+        <p class="task-h">3B · What your agent learned</p>
+        <p>What did your agent learn with the default reward, and with the other reward you tried? Did it do anything you didn't intend? If not, why couldn't it, and how would you change the game to make a hack possible?</p>
+        <textarea data-q="q3b" aria-label="Answer to 3B"></textarea>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ PART 4 ============ -->
+  <section id="part4">
+    <h2>Part 4 · Advise the campaign</h2>
+    <div class="callout">
+      <p style="margin:0">A Senate campaign wants to let an AI agent run its digital outreach. Every day the agent chooses which messages to send to which voters, and it learns from the results. The campaign proposes to reward it for <b>engagement</b>: clicks, shares and replies.</p>
+    </div>
+    <p>In <b>4 to 6 sentences</b>, advise them. Use at least <b>one idea</b> from today (reward, exploration, discount, reward hacking) and <b>one result you produced</b> in Part 2 or Part 3. What would you reward instead, and what would you watch for?</p>
+    <textarea data-q="q4" class="tall" aria-label="Answer to Part 4"></textarea>
+  </section>
+
+  <!-- ============ SUBMIT ============ -->
+  <section id="submit">
+    <h2>Submit before you leave</h2>
+    <div class="callout">
+      <ul class="checklist" id="checklist"></ul>
+    </div>
+    <ol>
+      <li>Press <b>Download my submission</b>. You get a text file with your name, your Part 2 runs, your game's link and checkpoints, and your answers.</li>
+      <li>On Canvas, open <b>Section 6 lab</b> and upload the file. (Or press <b>Copy</b> and paste it into the text box.)</li>
+      <li>Do this before section ends. Late submissions and resubmissions are not accepted, so if something is missing, submit what you have. If your game isn't live yet, paste the link anyway: your TA checks links after section.</li>
+    </ol>
+    <div class="btn-row">
+      <button type="button" class="btn" id="download">Download my submission</button>
+      <button type="button" class="btn secondary" id="copy-sub">Copy</button>
+    </div>
+    <div class="prompt" style="margin-top:1rem">
+      <div class="bar"><span>Preview</span></div>
+      <pre id="preview"></pre>
+    </div>
+  </section>
+
+  <!-- ============ GOING FURTHER ============ -->
+  <section id="further">
+    <h2>Going further <span class="muted" style="font-size:1rem;font-family:var(--font-body)">(optional, not graded)</span></h2>
+    <ul>
+      <li><b>Read today's agent.</b> The whole game and learner are in <a href="rl.js" target="_blank" rel="noopener"><code>rl.js</code></a>, about 120 lines. Ask your coding agent to walk you through <code>trainEpisode()</code> line by line.</li>
+      <li><b>More reward hacking.</b> DeepMind's researchers keep a public list of specification-gaming examples (Krakovna et al., "Specification gaming: the flip side of AI ingenuity," 2020).</li>
+      <li><b>The textbook.</b> Sutton and Barto, <em>Reinforcement Learning: An Introduction</em> (2nd ed., 2018), free online; chapter 6 is Q-learning.</li>
+      <li><b>Bigger agent.</b> Ask your coding agent to make the Capitol move, or add a second candidate. How many states is that, and does the table still work?</li>
+    </ul>
+  </section>
+
+  <!-- ============ GLOSSARY ============ -->
+  <section id="glossary">
+    <h2>Words you'll need</h2>
+    <dl class="gloss">
+      <dt>Agent</dt><dd>The learner that chooses actions.</dd>
+      <dt>State</dt><dd>What the agent can see when it chooses: here, its square and how long until the TV studio reopens.</dd>
+      <dt>Action</dt><dd>A move it can make: up, down, left, right.</dd>
+      <dt>Reward</dt><dd>The number the game gives after each action. The only signal of what we want.</dd>
+      <dt>Episode</dt><dd>One whole game, from start to finish.</dd>
+      <dt>Policy</dt><dd>The agent's rule for which action to take in each state.</dd>
+      <dt>Q-value</dt><dd>The total future reward the agent expects from taking an action in a state.</dd>
+      <dt>Learning rate (α)</dt><dd>How far each update moves a Q-value toward the new evidence.</dd>
+      <dt>Discount (γ)</dt><dd>How much later rewards count compared with immediate ones.</dd>
+      <dt>Exploration (ε)</dt><dd>The share of moves the agent makes at random while training, to find better options.</dd>
+      <dt>Reward hacking</dt><dd>Earning a high reward in a way the designer didn't intend. Also called specification gaming.</dd>
+      <dt>Goodhart's law</dt><dd>When a measure becomes a target, it stops being a good measure.</dd>
+    </dl>
+  </section>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section 6 lab. Campaign Trail and its agent are made for this lab; training runs in your browser with a fixed random seed, so the same settings always give the same result. CoastRunners example: OpenAI, "Faulty reward functions in the wild" (2016). Q-learning: Watkins (1989); Sutton and Barto (2018).</p>
+    <p>Your name and answers are stored only in this browser (nothing is sent anywhere). Your coding agent and GitHub see what you build; don't put personal information in your game. AI-use note: drafted with Claude Code (Claude Opus 5.5) and reviewed by the teaching team. <button type="button" class="linkbtn" id="reset-all">Clear my answers on this page</button></p>
+  </footer>
+</main>
+
+<script src="rl.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>
