@@ -1,0 +1,34 @@
+/* POLISCI 158 · Left "On this page" navigation for section pages.
+   Same look as the Section 5 lab. section-nav.js builds the sidebar from the
+   page's top-bar links and headings; this file only styles it.
+   Below 1080px the sidebar is hidden and the page looks exactly as before. */
+
+.snx-nav { display: none; }
+
+@media (min-width: 1080px) {
+  .snx-layout {
+    display: grid; align-items: start; justify-content: center; gap: 3rem;
+    grid-template-columns: 13.5rem minmax(0, var(--snx-main, 50rem));
+    max-width: calc(13.5rem + 3rem + var(--snx-main, 50rem) + 2.5rem);
+    margin: 0 auto; padding: 0 1.25rem;
+  }
+  .snx-layout > main { grid-column: 2; grid-row: 1; max-width: none; margin: 0; padding: 0; min-width: 0; }
+  .snx-nav {
+    display: block; grid-column: 1; grid-row: 1;
+    position: sticky; top: 4.5rem; padding-top: 3rem;
+    max-height: calc(100vh - 4.5rem); overflow-y: auto;
+  }
+  /* The sidebar replaces the top-bar page links; keep the bar as wide as the layout */
+  body.snx-on .topbar nav { display: none; }
+  body.snx-on .topbar .wrap { max-width: calc(13.5rem + 3rem + var(--snx-main, 50rem) + 2.5rem); }
+}
+
+.snx-nav .sn-h { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 0 0 .5rem; }
+.snx-nav ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
+.snx-nav li { margin: 0; }
+.snx-nav li a { display: block; padding: .3rem 0 .3rem .9rem; margin-left: -1px; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .9rem; line-height: 1.35; }
+.snx-nav li a:hover { color: var(--fg); }
+.snx-nav li a[aria-current="true"] { color: var(--fg); font-weight: 600; border-left-color: var(--accent); }
+.snx-nav li.sn-sep { margin-top: .6rem; padding-top: .6rem; border-top: 1px solid var(--line); }
+
+@media print { .snx-nav { display: none !important; } }
