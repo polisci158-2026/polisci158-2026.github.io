@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section 7 · Research with agent skills · POLISCI 158</title>
+<meta name="description" content="POLISCI 158 Section 7 lab: skills and principles for research with an agent, empirical research with an agent on one published paper, and a lab on your own project with a 200-word reflection to submit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
+<style>
+  /* Added on the section website: links back to the hub and course site, visible at every width */
+  .topbar .site-links { display: flex; gap: 1rem; font-size: .92rem; }
+  .topbar .site-links a { color: var(--muted); text-decoration: none; }
+  .topbar .site-links a:hover { color: var(--accent); }
+  /* Added on the section website: reflection form in the Submit part */
+  .reflect { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.15rem; margin: 1rem 0; }
+  .reflect .field { margin-bottom: .9rem; }
+  .reflect .field label { display: block; font-weight: 600; font-size: .92rem; margin-bottom: .35rem; }
+  .reflect textarea { min-height: 12rem; }
+  .reflect .hint { font-size: .82rem; color: var(--muted); margin: .3rem 0 0; }
+  #r-checklist li.ok::before { content: "☑"; color: var(--ok, #2e7d32); }
+</style>
+<link rel="stylesheet" href="../assets/section-nav.css">
+</head>
+<body data-route="claude">
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">POLISCI 158 · Section 7</a>
+    <nav aria-label="Page sections">
+      <a href="#skills">1 · Skills</a>
+      <a href="#research">2 · Empirical research</a>
+      <a href="#lab">3 · Lab</a>
+      <a href="#submit">Submit</a>
+      <a href="#stuck">Hints</a>
+    </nav>
+    <div class="site-links">
+      <a href="../index.html">Section website</a>
+      <a href="https://simonepaciphd.github.io/polisci158-ai-politics/">Course website ↗</a>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <section class="hero">
+    <p class="eyebrow">Week 8 · Section 7 · Lab</p>
+    <h1>Research with agent skills: from the literature to your own analysis</h1>
+    <p class="lede">Three parts. <strong>1 · Skills and principles:</strong> what a skill is, and how to install and call one. <strong>2 · Empirical research:</strong> one published paper, four steps, and at each step what the agent can do and what only you can decide. <strong>3 · Lab:</strong> move your own project forward with an agent, then <strong>submit a 200-word reflection on Canvas, due before next section</strong>.</p>
+
+    <div class="controls" aria-label="Personalize this page" style="grid-template-columns:1fr">
+      <div>
+        <span id="route-label" style="display:block;font-weight:600;font-size:.92rem;margin-bottom:.35rem">I'm using</span>
+        <div class="segmented" role="group" aria-labelledby="route-label">
+          <button type="button" data-route-btn="claude" aria-pressed="true">Claude Code</button>
+          <button type="button" data-route-btn="codex" aria-pressed="false">Codex</button>
+        </div>
+        <p class="hint">Folder names and wording below switch to match your tool.</p>
+      </div>
+    </div>
+
+    <div class="progress" aria-live="polite">
+      <div class="bar" aria-hidden="true"><span id="progress-fill"></span></div>
+      <span id="progress-text">0 of 3 lab steps done</span>
+    </div>
+
+    <div class="warn" style="margin-top:1.2rem"><strong>Next due:</strong> Implementation milestone · Sun, Nov 15</div>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section id="skills">
+    <h2>Part 1 · Skills and principles</h2>
+
+    <h3>What is a skill?</h3>
+    <p>A <strong>written procedure the agent follows</strong>: the instructions you'd give a careful research assistant, written once and followed the same way every time. It's a folder with a <code>SKILL.md</code> file, plus scripts if it needs them, in <code><span class="u-skilldir">.claude/skills</span>/</code>.</p>
+    <div class="callout">
+      <h3>A real one: Pedro Sant'Anna's <a href="https://github.com/pedrohcgs/claude-code-my-workflow/tree/main/.claude/skills/lit-review" target="_blank" rel="noopener">lit-review</a></h3>
+      <ul>
+        <li><strong>Description</strong>, always loaded: the phrases that tell the agent to use it ("find papers on X").</li>
+        <li><strong>Allowed tools</strong>: what it may touch.</li>
+        <li><strong>Steps</strong>, read only when used: start from a named paper, search, sort into theory, empirics, methods and debates, find gaps and null results, write BibTeX, save a report.</li>
+        <li><strong>Verification</strong>: it checks its citations before it reports back.</li>
+      </ul>
+    </div>
+
+    <h3>Five principles</h3>
+    <ol class="principles">
+      <li><strong>The harness decides.</strong> Model + loop, tools, permissions, skills. Choose them on purpose.</li>
+      <li><strong>Write repeated work down as a skill.</strong> Optional: a clear prompt often does the job.</li>
+      <li><strong>Keep context short.</strong> Plan, instruct, verify, correct: <em>"Before you start, tell me your plan in three steps. Wait for my OK."</em></li>
+      <li><strong>Delegate the procedural, keep the substantive.</strong> The most important one today; see below.</li>
+      <li><strong>Be transparent.</strong> Keep your chats. Every project submission needs an AI-use note.</li>
+    </ol>
+    <div class="callout">
+      <h3>4 · Delegate the procedural, keep the substantive</h3>
+      <p><span class="who agent">delegate, then check</span> Searches, downloads, code, figures.</p>
+      <p><span class="who you">keep</span> The question, the design, the assumptions, what the result means. Where the agent lacks what you know, it fills the gap with something plausible and made up.</p>
+    </div>
+
+    <h3>Install a skill (optional, after class)</h3>
+    <p>Open your project folder in <span data-only="claude">the Claude app's <strong>Code</strong> tab</span><span data-only="codex">Codex</span> and give your agent the link to the skill's folder:</p>
+    <div class="prompt"><div class="bar"><span>Example prompt</span><button type="button" class="copy">Copy</button></div><pre>Install the lit-review skill from github.com/pedrohcgs/claude-code-my-workflow/tree/main/.claude/skills/lit-review into <span class="u-skilldir">.claude/skills</span>/ in this folder. Before you copy anything, show me its SKILL.md and tell me what it will do.</pre></div>
+    <div class="warn" data-only="claude">Check with <em>"Which skills can you use here?"</em> Not listed? Run <code>/reload-skills</code> or start a new session in the same folder.</div>
+    <div class="warn" data-only="codex">Check with <em>"Which skills can you use here?"</em> Codex reads <code>.agents/skills/</code>; not listed? Restart Codex in the same folder.</div>
+    <p><strong>Read before you install:</strong> a skill can run scripts on your computer. <strong>Skills are optional</strong> and can go out of date as tools and models change: adapt one, or just write a clear prompt.</p>
+
+    <h3>Skills from researchers</h3>
+    <ul>
+      <li><strong>Scott Cunningham</strong> (Baylor), <a href="https://github.com/scunning1975/MixtapeTools" target="_blank" rel="noopener">MixtapeTools</a>: <code>referee2</code> audits finished empirical work in a fresh session; <code>bibcheck</code> checks every reference against its DOI.</li>
+      <li><strong>Pedro Sant'Anna</strong> (Emory), <a href="https://github.com/pedrohcgs/claude-code-my-workflow" target="_blank" rel="noopener">claude-code-my-workflow</a>: about 60 skills, including <code>lit-review</code>, <code>data-analysis</code> and <code>review-paper</code>. Works in Codex too.</li>
+      <li><strong>Simone Paci</strong>, <a href="https://github.com/simonepaciphd/with-great-powers" target="_blank" rel="noopener"><em>With Great Powers</em></a>: the skills behind his guide, including a literature-review protocol.</li>
+    </ul>
+
+    <h3>Call a skill</h3>
+    <p>In plain words (its description matches), or name it:</p>
+    <div class="prompt"><div class="bar"><span>Plain words</span><button type="button" class="copy">Copy</button></div><pre>I need literature on [your question]. Start from [a paper you know].</pre></div>
+    <div class="prompt"><div class="bar"><span>Name it</span><button type="button" class="copy">Copy</button></div><pre>Use the lit-review skill on [your question].</pre></div>
+    <p class="muted small">The principles are adapted from Simone Paci, <a href="https://simonepaciphd.github.io/with-great-powers/" target="_blank" rel="noopener"><em>With Great Powers: A Practical Guide to Agentic AI for Social Science Research</em></a> (2026).</p>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section id="research">
+    <h2>Part 2 · Empirical research with an agent</h2>
+    <p><strong>The paper:</strong> Anelli, Colantone &amp; Stanig (2021), <a href="https://doi.org/10.1073/pnas.2111611118" target="_blank" rel="noopener">"Individual vulnerability to industrial robot adoption increases support for the radical right"</a>, <em>PNAS</em>. European Social Survey, 13 western European countries, elections 1999–2015. <strong>Exposure to robots</strong> = how automatable your likely job is × how fast robots spread in your country. Nobody assigns robots at random, so it's observational.</p>
+
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th style="width:14%">Step</th><th><span class="who agent">agent</span> can</th><th><span class="who you">only you</span> can</th><th style="width:20%">A published skill</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 · Literature</strong></td><td>Start from one paper; map key papers into themes; find gaps and null results; write BibTeX.</td><td>Open the key papers: is each method and finding right?</td><td>Sant'Anna's <code>lit-review</code></td></tr>
+        <tr><td><strong>2 · Data</strong></td><td>Download the replication data and plot it, in seconds.</td><td>Spot that the first chart compares countries, not people.</td><td>Sant'Anna's <code>data-analysis</code></td></tr>
+        <tr><td><strong>3 · Text as data</strong></td><td>Label thousands of texts with your codebook; report agreement with your hand codes.</td><td>Define the categories; decide if agreement is good enough.</td><td>None needed</td></tr>
+        <tr><td><strong>4 · Analysis</strong></td><td>Run the regression and the instrumental-variable version, with a table and a chart.</td><td>Judge each assumption: unmeasured differences, other paths from robots abroad.</td><td>Sant'Anna's <code>data-analysis</code>; Cunningham's <code>referee2</code> to audit</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Step 2 · Data: the first chart compares countries, not people</h3>
+    <div class="figpair">
+      <figure><img src="fig1-raw.png" alt="Bar chart: share voting radical right by exposure group, all countries pooled. The least-exposed group has the highest share, 8.0 percent; the others range from 3.4 to 5.0 percent."><figcaption class="muted small"><b>First try:</b> all countries pooled. The <em>least</em> exposed vote radical right most.</figcaption></figure>
+      <figure><img src="fig2-within.png" alt="Bar chart: radical-right vote relative to the country-year average, by exposure group, rising from minus 2.2 points to plus 1.4 points."><figcaption class="muted small"><b>Second try:</b> each person compared with others in the same country and year. It rises steadily.</figcaption></figure>
+    </div>
+    <div class="warn"><strong>Why:</strong> the least-exposed group has many Swiss respondents, and Switzerland has the highest radical-right vote in the sample (about 24%).</div>
+
+    <h3>Step 3 · Text as data: check it before you scale it</h3>
+    <p>An agent can sort speeches, manifestos or survey answers into categories with your codebook. On 6,183 tweets and news articles, ChatGPT beat crowd workers by about 25 points in accuracy, at under $0.003 per label (<a href="https://doi.org/10.1073/pnas.2305016120" target="_blank" rel="noopener">Gilardi, Alizadeh &amp; Kubli 2023, <em>PNAS</em></a>). Accuracy meant agreement with trained human coders, so:</p>
+    <ol>
+      <li><span class="who you">you</span> Write a codebook, and hand-code a sample (say 100 texts).</li>
+      <li><span class="who agent">agent</span> Label the same sample; report agreement, category by category.</li>
+      <li><span class="who agent">agent</span> If you judge it good enough, label everything. Report the agreement.</li>
+    </ol>
+
+    <h3>Step 4 · Analysis: from a correlation to a causal claim</h3>
+    <figure style="margin:1rem 0 .4rem"><img src="fig3-estimates.png" alt="Estimates with 95 percent intervals: selection on observables (regression) plus 1.1 percentage points, interval about 0.2 to 2.0; instrumental variable plus 2.8, interval about 1.4 to 4.2" style="max-width:620px;width:100%"><figcaption class="muted small">Per one standard deviation more exposure, on a base of 4.8% voting radical right; 97,035 respondents. The instrumental-variable estimate (+2.8) matches the paper's Figure 3.</figcaption></figure>
+    <ul>
+      <li><strong>Selection on observables</strong> (the regression): compares people in the same country, year and region. Assumes nothing important is left unmeasured.</li>
+      <li><strong>Instrumental variable:</strong> robot growth in the <em>other</em> countries. It must reach the vote only through robots here: you argue it.</li>
+      <li><strong>Other designs:</strong> difference-in-differences needs parallel trends; regression discontinuity needs a cutoff (none here).</li>
+    </ul>
+
+    <h3>Five designs, and what to ask your agent</h3>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th style="width:20%">Design</th><th style="width:28%">It works if…</th><th>Ask your agent for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Randomized trial</strong></td><td>Treatment was assigned at random</td><td>A balance table</td></tr>
+        <tr><td><strong>Selection on observables</strong></td><td>Nothing important is left unmeasured</td><td>What could still differ; a sensitivity check</td></tr>
+        <tr><td><strong>Regression discontinuity</strong></td><td>Units either side of a cutoff are comparable</td><td>Sorting at the cutoff; balance near it</td></tr>
+        <tr><td><strong>Instrumental variable</strong></td><td>The instrument reaches the outcome only through the treatment</td><td>The first stage; other paths</td></tr>
+        <tr><td><strong>Difference-in-differences</strong></td><td>Trends would have stayed parallel</td><td>The pre-treatment plot</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="callout"><p><span class="who agent">agent can</span> Run each check.</p><p><span class="who you">only you can</span> Decide whether the assumption is believable for your question, and which design to defend.</p></div>
+    <p><strong>Not an empirical project?</strong> The same test works. Theoretical: the agent finds the literature on your mechanism and the strongest rival explanation; the mechanism is yours. Argumentative: it makes the strongest objection to your position; your position and standard are yours.</p>
+  </section>
+
+  <!-- ============ PART 3 ============ -->
+  <section id="lab">
+    <h2>Part 3 · Lab: move your project forward with an agent</h2>
+    <div class="callout">
+      <p><strong>What you submit:</strong> a <a href="#submit">200-word reflection on Canvas</a> about what you try here, <strong>due before next section</strong>.</p>
+      <p><strong>Questions about your project?</strong> Come by and ask your TA, about AI or anything else.</p>
+    </div>
+
+    <ol class="steps" id="step-list">
+      <li class="step" data-step="1">
+        <details>
+          <summary><span class="num">1</span><span class="title">Pick a next step<small>What will you hand over, what will you decide?</small></span></summary>
+          <div class="body">
+            <p>Pick one stage from the cards below. Write down what the agent does and what you decide yourself.</p>
+            <button type="button" class="done-toggle" data-done="1" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+      <li class="step" data-step="2">
+        <details>
+          <summary><span class="num">2</span><span class="title">Try it, then check it<small>With or without a skill</small></span></summary>
+          <div class="body">
+            <p>Ask for its plan first. When something matters, ask how it knows, then check one thing yourself.</p>
+            <div class="prompt"><div class="bar"><span>Start with</span><button type="button" class="copy">Copy</button></div><pre>Before you start, tell me your plan in three steps. Wait for my OK.</pre></div>
+            <button type="button" class="done-toggle" data-done="2" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+      <li class="step" data-step="3">
+        <details>
+          <summary><span class="num">3</span><span class="title">Submit your reflection<small>About 200 words, on Canvas, due before next section</small></span></summary>
+          <div class="body">
+            <p>Note what you tried, what worked and what went wrong, then write the <a href="#submit">reflection</a>. Keep the chat for your AI-use note.</p>
+            <button type="button" class="done-toggle" data-done="3" aria-pressed="false">Mark step done</button>
+          </div>
+        </details>
+      </li>
+    </ol>
+
+    <h3>Example prompts, with a skill where one fits</h3>
+    <p class="muted small">Skills are optional: without one, send the prompt without naming the skill.</p>
+    <div class="stages">
+      <div class="callout">
+        <h3>Literature</h3>
+        <div class="prompt"><div class="bar"><span>Skill: Sant'Anna's <code>lit-review</code></span><button type="button" class="copy">Copy</button></div><pre>Use the lit-review skill: find literature on [your question], starting from [a paper you know].</pre></div>
+        <p><span class="who you">you</span> Open every source you plan to cite.</p>
+      </div>
+      <div class="callout">
+        <h3>Data</h3>
+        <div class="prompt"><div class="bar"><span>Skill: Sant'Anna's <code>data-analysis</code></span><button type="button" class="copy">Copy</button></div><pre>Find and download a public dataset for [your question]. Tell me the source, unit and years first. Then clean it and list every change you made.</pre></div>
+        <p><span class="who you">you</span> Check three numbers against the source.</p>
+      </div>
+      <div class="callout">
+        <h3>Figure</h3>
+        <div class="prompt"><div class="bar"><span>No skill needed</span><button type="button" class="copy">Copy</button></div><pre>Plot [y] by [x] from [my cleaned file], in a clean journal style. Before you draw it, tell me what each bar compares.</pre></div>
+        <p><span class="who you">you</span> Does it compare like with like?</p>
+      </div>
+      <div class="callout">
+        <h3>Text coding</h3>
+        <div class="prompt"><div class="bar"><span>No skill needed</span><button type="button" class="copy">Copy</button></div><pre>Here are my codebook and 100 texts I coded by hand. Label them, then compare with my labels, category by category. Don't change the codebook.</pre></div>
+        <p><span class="who you">you</span> Is the agreement good enough?</p>
+      </div>
+      <div class="callout">
+        <h3>Analysis</h3>
+        <div class="prompt"><div class="bar"><span>Skill: Sant'Anna's <code>data-analysis</code></span><button type="button" class="copy">Copy</button></div><pre>Use the data-analysis skill on [my data file]: run [my model], with a table and a figure. Show me the code.</pre></div>
+        <p><span class="who you">you</span> Choose the design first; name the assumption you're least sure of.</p>
+      </div>
+      <div class="callout">
+        <h3>Second opinion</h3>
+        <div class="prompt"><div class="bar"><span>Skill: Cunningham's <code>referee2</code></span><button type="button" class="copy">Copy</button></div><pre>In a fresh session: use the referee2 skill on my code, or list the three biggest threats to my main claim. Don't edit my files.</pre></div>
+        <p><span class="who you">you</span> Decide which threats are real.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUBMIT ============ -->
+  <section id="submit">
+    <h2>Submit: a 200-word reflection on Canvas</h2>
+    <div class="warn"><strong>Due before next section</strong> · Section Assignment 7 · Pass / No-Pass · submit on Canvas</div>
+    <div class="callout">
+      <h3>Answer two questions about what you tried</h3>
+      <ol>
+        <li><strong>Delegate or decide?</strong> Which work could you hand to an AI agent, and which judgments must stay yours? Why?</li>
+        <li><strong>What happened?</strong> What did you try, what worked, what went wrong, and how did you check?</li>
+      </ol>
+    </div>
+    <p><strong>To pass:</strong> about 200 words · both questions, about something you actually tried on your project. <strong>Write it yourself.</strong></p>
+
+    <div class="reflect">
+      <div class="field">
+        <label for="r-name">Your name</label>
+        <input id="r-name" type="text" autocomplete="name" spellcheck="false" placeholder="e.g. Jordan Rivera">
+      </div>
+      <div class="field">
+        <label for="r-answer">Your reflection</label>
+        <textarea id="r-answer" rows="10" placeholder="Answer both questions above, about something you actually tried on your project."></textarea>
+      </div>
+      <p class="hint" id="r-count" aria-live="polite">0 words so far · aim for about 200</p>
+      <p class="hint">Saved in this browser as you type, so you can come back before the deadline. Nothing is sent anywhere.</p>
+    </div>
+
+    <div class="callout">
+      <ul class="checklist" id="r-checklist"></ul>
+    </div>
+    <ol>
+      <li>Press <b>Download my reflection</b>. You get a text file with your name and your reflection.</li>
+      <li>On Canvas, open <b>Section Assignment 7</b> and upload the file. (Or press <b>Copy</b> and paste it into the text box.)</li>
+    </ol>
+    <div class="btn-row">
+      <button type="button" class="btn" id="r-download">Download my reflection</button>
+      <button type="button" class="btn secondary" id="r-copy">Copy</button>
+    </div>
+    <div class="prompt" style="margin-top:1rem">
+      <div class="bar"><span>Preview</span></div>
+      <pre id="r-preview"></pre>
+    </div>
+
+    <div class="warn" style="margin-top:1.2rem"><strong>Next due:</strong> Implementation milestone · Sun, Nov 15</div>
+  </section>
+
+  <!-- ============ HINTS ============ -->
+  <section id="stuck">
+    <h2>Hints</h2>
+    <label class="visually-hidden" for="faq-q">Search hints</label>
+    <input type="text" id="faq-q" class="faq-search" placeholder="Search: skill, install, forgets, words…">
+    <div class="faq" id="faq">
+      <details data-keys="skill not found missing list install folder hidden reload">
+        <summary>The agent doesn't see the skill</summary>
+        <div>Check the path: <code><span class="u-skilldir">.claude/skills</span>/[skill-name]/SKILL.md</code>, inside the folder you opened. Then run <code>/reload-skills</code> or start a new <span data-only="claude">session</span><span data-only="codex">chat</span>.</div>
+      </details>
+      <details data-keys="circles long session forgets rules drift fresh">
+        <summary>The agent forgets what we agreed</summary>
+        <div>Ask it to write a short summary to a file, then start a fresh <span data-only="claude">session</span><span data-only="codex">chat</span> that begins by reading it.</div>
+      </details>
+      <details data-keys="words terms harness skill context fixed effects instrument parallel trends">
+        <summary>Words you'll need</summary>
+        <div><strong>Harness:</strong> the model plus its loop, tools, permissions and skills. <strong>Context:</strong> what the model can see right now; long sessions lose track. <strong>Fixed effects:</strong> comparing people only within the same group, here the same country and year. <strong>Instrumental variable:</strong> moves the treatment and affects the outcome only through it; that second part can't be tested, you argue it. <strong>Parallel trends:</strong> without treatment, the two groups would have changed by the same amount.</div>
+      </details>
+      <p class="empty" id="faq-empty">No match. Ask your agent, a neighbour, or your TA.</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>POLISCI 158 · AI &amp; Politics · Fall 2026 · Section 7 lab. Empirical example: Anelli, Colantone &amp; Stanig (2021), <em>PNAS</em>, <a href="https://doi.org/10.1073/pnas.2111611118" target="_blank" rel="noopener">doi:10.1073/pnas.2111611118</a>; data from the authors' <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ITFA7O" target="_blank" rel="noopener">replication package</a>. Principles adapted from Simone Paci, <a href="https://simonepaciphd.github.io/with-great-powers/" target="_blank" rel="noopener"><em>With Great Powers</em></a> (2026). Skills shown are published by their authors.</p>
+    <p>AI-use note: drafted with Claude Code (Claude Opus 5.5) and reviewed by the teaching team; the numbers come from a real run of the authors' data. <button type="button" class="linkbtn" id="reset-all">Reset my progress on this page</button></p>
+  </footer>
+</main>
+
+<script src="app.js?v=2"></script>
+<script src="../assets/section-nav.js" defer></script>
+</body>
+</html>

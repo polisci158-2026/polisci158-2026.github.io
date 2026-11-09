@@ -114,6 +114,21 @@ window.SECTIONS = [
       href: "section-06/assignment.html"
     }
   },
-  { num: 7, status: "upcoming", title: "To be announced", summary: "", links: [] },
+  {
+    num: 7,
+    status: "published",
+    title: "Research with agent skills",
+    summary: "What a skill is and how to install and call one, how an agent can help at each step of an empirical paper, then a lab moving your own project forward.",
+    links: [
+      { label: "Lab", href: "section-07/index.html", primary: true },
+      { label: "Submit", href: "section-07/index.html#submit" }
+    ],
+    assignment: {
+      title: "200-word reflection on your project",
+      grading: "Pass / No-Pass",
+      due: "Before Section 8 (see Canvas)",
+      href: "section-07/index.html#submit"
+    }
+  },
   { num: 8, status: "upcoming", title: "To be announced", summary: "", links: [] }
 ];
